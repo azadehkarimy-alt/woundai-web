@@ -10,3 +10,14 @@
 .logo-avatar{padding:0!important;overflow:hidden;background:#fff!important;border:1px solid #d9e8ed!important}.logo-avatar img{width:100%;height:100%;object-fit:contain}.anatomy-picker{border:1px solid #dcebef;background:#f7fbfc;border-radius:14px;padding:13px;margin:12px 0 16px}.anatomy-regions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.anatomy-regions button{border:1px solid #d5e6e9;background:#fff;color:#24475e;border-radius:9px;padding:9px 5px;font-size:10px;min-height:40px}.anatomy-regions button.selected{background:#082b4b;color:#fff;border-color:#00b9a9;box-shadow:inset 0 -3px #00b9a9}.selected-region{margin-top:10px;color:#008f89;font-size:11px;font-weight:700}.anatomy-picker .panel-head h3{font-size:13px}.anatomy-picker .panel-head p{font-size:10px}@media(max-width:760px){.anatomy-regions{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
 .bodymap-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 14px}.bodymap-card{background:#fff;border:1px solid #e0ebef;border-radius:12px;padding:10px;text-align:center}.bodymap-card>b{font-size:10px;color:#36586d}.bodymap-card svg{display:block;width:100%;max-height:220px;margin:5px auto 0}.bodymap-dot{cursor:pointer;outline:none}.bodymap-dot circle{fill:#00a99d;stroke:#fff;stroke-width:2}.bodymap-dot text{fill:#fff;font:700 8px sans-serif;text-anchor:middle}.bodymap-dot:hover circle,.bodymap-dot:focus circle{fill:#082b4b;stroke:#00d3c0;stroke-width:3}.bodymap-dot.selected circle{fill:#082b4b;stroke:#00d3c0;stroke-width:4}
+
+/* WoundAI approved brand + guided mobile imaging */
+.brand-card img{width:min(100%,250px);height:auto;max-height:92px;object-fit:contain;background:#fff;border-radius:12px;padding:5px}
+.topbar .logo-avatar img{object-fit:contain;background:#fff;border-radius:12px;padding:2px}
+.photo-guide{background:linear-gradient(135deg,#eaf8f7,#f4f8fb);border:1px solid #c7e8e4;border-inline-start:4px solid #00a99d;border-radius:16px;padding:14px 16px;margin:14px 0;color:#082b4b}
+.photo-guide b{display:block;margin-bottom:8px;color:#087f7a}
+.photo-guide ol{margin:0;padding-inline-start:22px;display:grid;gap:6px;font-size:.92rem;line-height:1.65}
+#capturePhoto{background:#062b4b;color:#fff;border-color:#062b4b}
+.camera-stage{touch-action:manipulation}
+#drawCanvas{touch-action:pan-y}
+@media(max-width:700px){.brand-card img{width:180px;max-height:72px}.photo-guide{font-size:.9rem}.camera-actions>*{flex:1 1 42%}}

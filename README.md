@@ -1,26 +1,19 @@
-# WoundAI Pro Web v2.0 — Mobile-first PWA prototype
+# WoundAI Pro Web — PWA v4.0
 
-## Included in this package
-- Persian RTL / English LTR interface, responsive for phone and desktop.
-- Approved WoundAI logo asset used in the app shell.
-- Patient record creation, search, archive/activate, local persistence.
-- Multiple wound records per patient.
-- Camera access via `getUserMedia` on HTTPS, camera switching, still capture by tapping the preview, and gallery upload fallback.
-- Manual wound boundary polygon tracing, undo/clear, reference-scale calibration, and area calculation only when calibrated.
-- Local JSON backup/restore and CSV patient export.
-- Explicit AI status: no validated AI model is bundled; no automatic wound detection or clinical grading is fabricated.
-- Security status page explaining local-only storage and production requirements.
+This is an incremental PWA build for mobile and desktop.
 
-## Run on a phone
-1. Upload the extracted folder contents to a static HTTPS host (GitHub Pages is sufficient for this local prototype).
-2. Open the site in Chrome/Safari. Camera access requires HTTPS and browser permission.
-3. Install from the browser menu if offered (Add to Home Screen).
-4. Use only synthetic/test data. Export a JSON backup regularly while evaluating the prototype.
+## Included in this build
+- Uses the user-provided approved WoundAI wordmark artwork in the app brand area.
+- Generates 192px and 512px install icons from that same supplied logo artwork.
+- Adds a standard wound photography guide (lighting, perpendicular angle, full wound margin, scale at skin level).
+- Camera preview no longer silently captures the first video frame. The user must tap **Capture photo**.
+- Front/rear camera switching is available where supported by the browser.
+- Adds two-point on-image scale selection: tap both ends of a known ruler/card distance, enter the real length in cm, then set calibration.
+- Keeps manual polygon tracing and labels measurements as manual, clinician-reviewed measurements.
+- Bumps the service-worker cache name to v4 to avoid serving stale v3 assets.
+
+## Deploy to GitHub Pages
+Upload the *contents* of this folder to the repository root, including `assets/`, then commit to the Pages source branch. Do not upload the ZIP as a single file.
 
 ## Important limitations
-This is a front-end prototype, not a production clinical system. Data is stored in browser localStorage on one device. There is no cloud account, cross-device sync, server-side encryption, multi-clinic access control, MFA, or server backup. Do not enter identifiable or real patient data.
-
-No trained/validated AI detection or segmentation weights are included. The imaging workflow supports manual tracing and calibrated area calculation. Wound depth must be entered using an appropriate clinical method, not inferred from a 2D photo. Clinical classification tools (SINBAD, WIfI, IWGDF/IDSA, Wagner, University of Texas, NPIAP, PUSH, BWAT) require verified rule tables, licensed content where applicable, and clinician validation before implementation; they are not represented as operational scoring engines in this prototype.
-
-## Production architecture still required
-A secure backend/API, relational database, private encrypted object storage, authentication/MFA, role-based access, organization isolation, append-only audit events, automated encrypted backup/restore, consent/version management, clinical validation, privacy/legal review (including GDPR/DPIA and applicable medical-device rules), and independent AI validation.
+This is still a research/prototype build. It does not contain a clinically validated automatic wound segmentation model, a secure multi-user backend, or a central database. Local browser storage is not suitable for identifiable real-patient data. Do not use it as a clinical decision system.
