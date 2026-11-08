@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102b35">
+  <meta name="description" content="WoundAI research web prototype for wound documentation and calibrated manual measurement">
+  <title>WoundAI | مدیریت و پایش زخم</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><div class="brandmark">W</div><div><strong>WoundAI</strong><small>سامانه پژوهشی مدیریت زخم</small></div></div>
+  <div class="top-actions">
+    <button id="langToggle" class="ghost" type="button" title="English">EN</button>
+    <span class="local-pill"><i></i> ذخیره‌سازی محلی</span>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="sidebar">
+    <div class="side-title">فضای کاری</div>
+    <button class="nav active" data-view="dashboard"><span>▦</span> داشبورد</button>
+    <button class="nav" data-view="patients"><span>♙</span> پرونده بیماران</button>
+    <button class="nav" data-view="measure"><span>⌖</span> اندازه‌گیری زخم</button>
+    <button class="nav" data-view="research"><span>⌁</span> وضعیت هوش مصنوعی</button>
+    <div class="side-note"><b>نسخه پژوهشی</b><p>برای آزمایش با داده‌های ساختگی یا تصاویر غیرشناسایی‌شده. برای اطلاعات واقعی بیمار استفاده نکنید.</p></div>
+  </aside>
+
+  <section class="content">
+    <section id="view-dashboard" class="view">
+      <div class="page-head">
+        <div><p class="eyebrow">نمای کلی</p><h1>داشبورد WoundAI</h1><p class="muted">ثبت، اندازه‌گیری و مشاهده روند تغییرات زخم</p></div>
+        <button class="primary" id="newPatientBtn">＋ بیمار جدید</button>
+      </div>
+      <div class="stats">
+        <article class="stat"><span>کل پرونده‌ها</span><strong id="statPatients">۰</strong><small>بیماران ثبت‌شده در این مرورگر</small></article>
+        <article class="stat"><span>تصاویر ثبت‌شده</span><strong id="statImages">۰</strong><small>تصاویر موجود در حافظه محلی</small></article>
+        <article class="stat"><span>اندازه‌گیری‌ها</span><strong id="statMeasures">۰</strong><small>محاسبات ذخیره‌شده</small></article>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>پرونده‌های اخیر</h2><p class="muted">برای مشاهده یا ثبت اندازه‌گیری انتخاب کنید</p></div><button class="text-btn" data-goto="patients">همه پرونده‌ها ←</button></div>
+        <div id="recentPatients" class="patient-list empty-state">هنوز پرونده‌ای ثبت نشده است.</div>
+      </div>
+      <div class="notice warning"><b>یادآوری ایمنی</b><p>نتایج این نسخه صرفاً محاسبات هندسی و ثبت اطلاعات هستند؛ تشخیص، پیش‌بینی ترمیم یا توصیه درمانی ارائه نمی‌شود.</p></div>
+    </section>
+
+    <section id="view-patients" class="view hidden">
+      <div class="page-head"><div><p class="eyebrow">مدیریت اطلاعات</p><h1>پرونده بیماران</h1><p class="muted">اطلاعات دمو فقط روی همین دستگاه ذخیره می‌شود.</p></div><button class="primary" id="newPatientBtn2">＋ بیمار جدید</button></div>
+      <div id="allPatients" class="patient-list empty-state">هنوز پرونده‌ای ثبت نشده است.</div>
+    </section>
+
+    <section id="view-measure" class="view hidden">
+      <div class="page-head"><div><p class="eyebrow">آنالیز تصویر</p><h1>اندازه‌گیری دستی زخم</h1><p class="muted">ابتدا تصویر را انتخاب کنید؛ سپس خط‌کش و مرز زخم را مشخص کنید.</p></div></div>
+      <div class="measure-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>۱. اطلاعات اندازه‌گیری</h2><span class="step">مرحله ۱ از ۳</span></div>
+          <label class="field">پرونده بیمار<select id="measurePatient"><option value="">انتخاب پرونده</option></select></label>
+          <label class="field">عنوان زخم / محل آن<input id="woundLabel" placeholder="مثلاً زخم پای راست"></label>
+          <label class="field">تصویر زخم<input id="imageInput" type="file" accept="image/*" capture="environment"></label>
+          <div id="imageMeta" class="muted small">تصویری انتخاب نشده است.</div>
+          <label class="field">فاصله واقعی دو نقطه خط‌کش (میلی‌متر)<input id="referenceMm" type="number" min="0.1" step="0.1" value="10"></label>
+          <div class="quality-box" id="qualityBox">پس از انتخاب تصویر، ارزیابی اولیه کیفیت نمایش داده می‌شود.</div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>۲. علامت‌گذاری روی تصویر</h2><span class="step">مرحله ۲ از ۳</span></div>
+          <div class="toolbar">
+            <button class="tool active" id="rulerMode">① کالیبراسیون</button>
+            <button class="tool" id="boundaryMode">② مرز زخم</button>
+            <button class="tool" id="editMode">✥ اصلاح نقاط</button>
+          </div>
+          <div class="canvas-wrap" id="canvasWrap"><canvas id="photoCanvas" width="900" height="600"></canvas><div id="canvasPlaceholder">برای شروع، تصویر زخم را بارگذاری کنید.</div></div>
+          <div class="canvas-help" id="canvasHelp">در حالت کالیبراسیون، دو انتهای یک فاصله معلوم روی خط‌کش را لمس کنید.</div>
+          <div class="inline-actions"><button class="secondary" id="undoPoint">حذف آخرین نقطه</button><button class="secondary" id="resetPoints">پاک کردن علامت‌ها</button></div>
+          <div class="measure-result">
+            <div><span class="muted">مساحت محاسبه‌شده</span><strong id="areaResult">— cm²</strong></div>
+            <div><span class="muted">طول خط‌کش روی تصویر</span><strong id="scaleResult">— px</strong></div>
+          </div>
+          <label class="check"><input type="checkbox" id="rulerAligned"> خط‌کش در همان صفحه و تقریباً هم‌سطح زخم قرار دارد.</label>
+          <label class="check"><input type="checkbox" id="photoSuitable"> تصویر از نظر نور، وضوح و زاویه برای اندازه‌گیری مناسب است.</label>
+          <label class="check"><input type="checkbox" id="clinicianReviewed"> اندازه‌گیری و مرز ترسیم‌شده توسط متخصص بازبینی شده است.</label>
+          <button class="primary wide" id="saveMeasurement" disabled>ذخیره اندازه‌گیری</button>
+          <p class="muted tiny">ذخیره تنها پس از تعیین دو نقطه کالیبراسیون، حداقل سه نقطه مرزی و تأیید چک‌لیست امکان‌پذیر است.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-research" class="view hidden">
+      <div class="page-head"><div><p class="eyebrow">نقشه راه فنی</p><h1>وضعیت هوش مصنوعی</h1><p class="muted">وضعیت واقعی اجزای AI در سورس Android v4.4.1</p></div></div>
+      <div class="notice info"><b>وضعیت فعلی: مدل آموزش‌دیده نصب نشده است.</b><p>قراردادهای نرم‌افزاری برای اتصال مدل وجود دارند، اما وزن‌های مدل، موتور inference و خروجی بالینی معتبر همراه سورس نیستند.</p></div>
+      <div class="research-grid">
+        <article class="research-card"><span class="tag ready">موجود در نسخه وب</span><h3>اندازه‌گیری هندسی</h3><p>کالیبراسیون با خط‌کش، محاسبه مساحت چندضلعی و اصلاح دستی نقاط.</p></article>
+        <article class="research-card"><span class="tag partial">غربالگری ساده</span><h3>کیفیت تصویر</h3><p>برآورد وضوح، روشنایی، پیکسل‌های اشباع و کنتراست؛ آستانه‌ها بالینی نیستند.</p></article>
+        <article class="research-card"><span class="tag planned">قرارداد موجود، مدل غایب</span><h3>تقسیم‌بندی CNN</h3><p>رابط ورودی/خروجی و اعتبارسنجی خروجی در سورس هست؛ وزن مدل و inference وجود ندارد.</p></article>
+        <article class="research-card"><span class="tag planned">قرارداد موجود، مدل غایب</span><h3>طبقه‌بندی ANN / SVM</h3><p>رابط‌های اتصال تعریف شده‌اند؛ مدل‌های آموزش‌دیده و ارزیابی‌شده نصب نیستند.</p></article>
+        <article class="research-card"><span class="tag planned">آینده</span><h3>تحلیل سه‌بعدی</h3><p>نقطه توسعه الهام‌گرفته از MAVIS؛ بازسازی سه‌بعدی در این نسخه پیاده‌سازی نشده است.</p></article>
+        <article class="research-card"><span class="tag planned">آینده</span><h3>پایش روند</h3><p>مقایسه توصیفی اندازه‌گیری‌های متوالی؛ به‌تنهایی تشخیص روند ترمیم نیست.</p></article>
+      </div>
+      <div class="panel"><h2>مراحل پیشنهادی توسعه</h2><ol class="roadmap"><li>تکمیل ذخیره‌سازی امن، مدیریت کاربران و کنترل دسترسی</li><li>تست مستقل کالیبراسیون، تبدیل مختصات و مهاجرت داده‌ها</li><li>ساخت مجموعه داده دارای مجوز و برچسب‌گذاری متخصص</li><li>آموزش و ارزیابی مدل segmentation با Dice، IoU و خطای مساحت</li><li>نمایش مرز پیشنهادی AI با امکان اصلاح و تأیید متخصص</li><li>اعتبارسنجی بالینی، امنیت و بررسی الزامات مقرراتی</li></ol></div>
+    </section>
+  </section>
+</main>
+
+<dialog id="patientDialog">
+  <form method="dialog" id="patientForm">
+    <div class="dialog-head"><div><p class="eyebrow">پرونده جدید</p><h2>ثبت بیمار</h2></div><button class="icon-btn" value="cancel" aria-label="بستن">×</button></div>
+    <label class="field">نام نمایشی بیمار<input id="patientName" required maxlength="80" placeholder="مثلاً بیمار آزمایشی ۰۱"></label>
+    <label class="field">شناسه داخلی (اختیاری)<input id="patientCode" maxlength="40" placeholder="کد غیرشناسایی‌کننده"></label>
+    <label class="field">یادداشت اولیه<textarea id="patientNote" rows="3" placeholder="از درج نام کامل، شماره تماس یا اطلاعات هویتی خودداری کنید."></textarea></label>
+    <div class="dialog-actions"><button class="secondary" value="cancel">انصراف</button><button class="primary" id="createPatient" value="default">ذخیره پرونده</button></div>
+  </form>
+</dialog>
+
+<dialog id="detailDialog"><div id="detailContent"></div></dialog>
+<div id="toast" class="toast" role="status"></div>
+<footer>WoundAI Research Prototype · v0.1 Web · No clinical diagnosis</footer>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
