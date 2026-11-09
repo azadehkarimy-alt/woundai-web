@@ -56,3 +56,19 @@ This is still a research/prototype build. It does not contain a clinically valid
 - ANN task preserved from the initial project discussion: use structured clinical, image-derived and treatment/longitudinal features to estimate healing trajectory or treatment response. This requires a labelled, de-identified longitudinal dataset and a precisely defined target (e.g. percentage area reduction by a fixed follow-up window or healing/non-healing at a defined time).
 - The current project contains no verified labelled training dataset or trained ANN weights. Therefore an honest trained predictor cannot be shipped yet. The UI must not fabricate predictions or reuse the literature-reported 96% as this product's performance.
 - Recommended training split is patient-level (not image-level) with an independent test set; report AUROC/AUPRC for classification or MAE/RMSE for regression, calibration and subgroup performance. External validation and clinician review are required before clinical use.
+
+
+## نسخه ۱۰ — تکمیل هفت محور ارزیابی تخصصی
+این نسخه یک خروجی هفت‌محوره در بخش ارزیابی بالینی اضافه می‌کند:
+1. طبقه‌بندی و گریدبندی: نمایش چارچوب‌های ثبت‌شده NPIAP، Wagner، University of Texas و WIfI؛ سیستم گرید را از روی داده ناقص حدس نمی‌زند.
+2. بستر زخم: خلاصه درصد گرانولاسیون، اسلاف، نکروز و اپی‌تلیال.
+3. ترشحات: مقدار و نوع ترشح و یادآوری مستندسازی تغییرات.
+4. عفونت/التهاب: شدت ثبت‌شده و علائم موضعی، همراه با هشدار ارزیابی بالینی.
+5. خطرها: پرچم‌های خطر بر اساس ایسکمی، علائم سیستمیک/موضعی، نکروز و درد شدید.
+6. ملاحظات پانسمان: پیشنهاد خانواده پانسمان بر اساس مقدار ترشح و شرایط ثبت‌شده؛ نه نسخه قطعی یا انتخاب برند.
+7. پلن و پیگیری: پاک‌سازی طبق پروتکل مرکز، حفاظت پوست اطراف، کنترل علت زمینه‌ای، کاهش فشار در صورت اندیکاسیون و پایش استاندارد.
+خروجی هفت‌محوره و جزئیات آن در پیش‌نویس پلن مراقبت ذخیره می‌شود. همه پیشنهادها نیازمند بازبینی درمانگرند و جایگزین تشخیص/نسخه پزشکی نیستند.
+
+
+## نسخه ۱۰.۱ — ممیزی و یکپارچه‌سازی هفت محور
+هفت محور ارزیابی در زمان ورود به فرم بالینی نمایش داده می‌شوند و با تغییر ورودی‌های مرتبط به‌روزرسانی می‌شوند؛ دکمه محاسبه امتیاز و ساخت پلن نیز هر دو خروجی را تازه‌سازی می‌کنند. پرچم‌های خطر شامل فشار سیستولیک پایین، افزایش تعداد تنفس، اشباع اکسیژن پایین، دمای پایین، Probe-to-bone مثبت، علائم عفونت، ایسکمی، نکروز و درد شدید است. این آستانه‌ها غربالگری هشدارند و تشخیص سپسیس یا بیماری خاص نیستند. طبقه‌بندی‌های NPIAP/Wagner/UT/WIfI ورودی ارزیاب هستند؛ سامانه آن‌ها را از روی عکس یا داده ناقص حدس نمی‌زند. محاسبه SINBAD/PUSH/BWAT فقط با تکمیل ورودی‌های لازم انجام می‌شود. پیشنهاد پانسمان، خانواده‌های قابل بررسی را بر اساس ترشح و نشانه‌های ثبت‌شده مطرح می‌کند و نسخه قطعی نیست.

@@ -128,7 +128,7 @@ function buildCarePlan(){
  const tissue=[Number(get('tGran'))||0,Number(get('tSlough'))||0,Number(get('tNecrosis'))||0,Number(get('tEpi'))||0];
  const plan=[];
  let urgency='روال ارزیابی'; let urgent=false;
- if(infection==='severe'||(temp>=38&&temp<50)||hr>=120||(checked('sPus')&&signs>=3)){
+ if(infection==='severe'||(temp>=39&&temp<50)||hr>=120||(checked('sPus')&&signs>=3)||(get('aBP').match(/^\\s*\\d{2,3}\\s*\\/\\s*\\d{2,3}\\s*$/)&&Number(get('aBP').split('/')[0])<90)||(get('aRR')!==''&&Number(get('aRR'))>=30)||(get('aSpO2')!==''&&Number(get('aSpO2'))<90)||(get('aTemp')!==''&&temp<35.5)){
    urgency='نیازمند ارزیابی فوری حضوری'; urgent=true;
    plan.push('ارزیابی فوری توسط پزشک/تیم زخم؛ در صورت بدحالی عمومی، تب، گیجی، افت فشار یا گسترش سریع قرمزی، مراجعه اورژانسی لازم است.');
  } else if(infection==='moderate'||signs>=2){urgency='ارزیابی زودهنگام توسط درمانگر';plan.push('بازبینی زودهنگام علائم عفونت/التهاب، گسترش اریتم، گرمی، تورم، درد و ترشح؛ شدت عفونت فقط با معاینه و معیارهای بالینی تعیین شود.');}
@@ -145,18 +145,71 @@ function buildCarePlan(){
  plan.push('در مراجعه بعدی، تصویر با زاویه و مقیاس مشابه ثبت و مساحت، طول/عرض، بافت بستر، ترشح، درد و علائم عفونت با مقادیر قبلی مقایسه شود.');
  const follow=get('aFollowup');
  if(follow) plan.push(`تاریخ پیگیری واردشده توسط ارزیاب: ${follow}؛ فاصله پیگیری باید با شدت و وضعیت بیمار توسط درمانگر تأیید شود.`);
+
+ // Seven explicit clinical domains: classification, tissue, exudate, infection, risk, dressing considerations, follow-up.
+ const etiologyLabels={diabetic:'پای دیابتی',pressure:'آسیب فشاری',venous:'وریدی',arterial:'شریانی',surgical:'جراحی',traumatic:'تروماتیک',burn:'سوختگی',mixed:'مختلط',unknown:'نامشخص'};
+ const grades=[];
+ if(get('aNpiap')&&get('aNpiap')!=='na')grades.push('NPIAP: '+get('aNpiap'));
+ if(get('aWagner')!=='')grades.push('Wagner: گرید '+get('aWagner'));
+ if(get('aUTGrade')!==''||get('aUTStage')!=='')grades.push('University of Texas: Grade '+(get('aUTGrade')||'—')+' / Stage '+(get('aUTStage')||'—'));
+ if(get('wWound')!==''||get('wIschemia')!==''||get('wInfection')!=='')grades.push('WIfI: W'+(get('wWound')||'—')+' / I'+(get('wIschemia')||'—')+' / fI'+(get('wInfection')||'—'));
+ const exudate=get('aExudate'), exType=get('aExudateType'), et=get('aEtiology');
+ let dressing='ابتدا نوع زخم، بستر، پوست اطراف، عمق و هدف درمان را بررسی کنید؛ با داده فعلی انتخاب قطعی پانسمان ممکن نیست.';
+ if(exudate==='high') dressing='با توجه به ترشح زیاد، خانواده‌های جاذب مانند فوم یا هیدروفایبر/آلژینات می‌توانند برای بررسی درمانگر مطرح باشند؛ علت ترشح و عفونت را نیز ارزیابی کنید و از خیساندن پوست اطراف پیشگیری شود.';
+ else if(exudate==='moderate') dressing='برای ترشح متوسط، پانسمان‌های جاذب مانند فوم یا هیدروفایبر بر اساس عمق و حفره زخم قابل بررسی‌اند؛ تناوب تعویض طبق دستور سازنده و وضعیت زخم تعیین شود.';
+ else if(exudate==='low') dressing='برای ترشح کم، لایه تماس غیرچسبنده و پانسمان با حفظ رطوبت متعادل قابل بررسی است؛ اگر بستر خشک یا اسلاف‌دار است، نیاز به رطوبت‌رسانی فقط پس از ارزیابی علت و پرفیوژن بررسی شود.';
+ else if(exudate==='none') dressing='خشکی بستر و علت نبود ترشح بررسی شود؛ انتخاب پانسمان محافظ و حفظ رطوبت متعادل بر اساس اتیولوژی و معاینه درمانگر انجام شود.';
+ if(exType==='چرکی'||checked('sPus')) dressing+=' ترشح چرکی/مشکوک به عفونت نیازمند ارزیابی بالینی است؛ پانسمان ضدمیکروبی جایگزین تشخیص و درمان عفونت نیست.';
+ const riskFlags=[];
+ const bpMatch=get('aBP').match(/^(\s*\d{2,3})\s*\/\s*(\d{2,3})\s*$/);
+ const systolic=bpMatch?Number(bpMatch[1]):null, rr=Number(get('aRR')), spo2=Number(get('aSpO2'));
+ if(systolic!==null&&systolic<90)riskFlags.push('فشار سیستولیک کمتر از ۹۰ ثبت شده: ارزیابی فوری حضوری و بررسی وضعیت همودینامیک لازم است.');
+ if(get('aRR')!==''&&rr>=22)riskFlags.push('تعداد تنفس ۲۲ یا بیشتر ثبت شده: وضعیت عمومی و علائم سیستمیک باید فوراً توسط درمانگر بررسی شود.');
+ if(get('aSpO2')!==''&&spo2<92)riskFlags.push('اشباع اکسیژن کمتر از ۹۲٪ ثبت شده: ارزیابی فوری بالینی لازم است؛ صحت اندازه‌گیری و شرایط بیمار بررسی شود.');
+ if(get('aTemp')!==''&&temp<36)riskFlags.push('دمای کمتر از ۳۶ درجه ثبت شده: هیپوترمی/بیماری سیستمیک باید بررسی شود.');
+ if(get('aPTB')==='positive')riskFlags.push('Probe-to-bone مثبت ثبت شده: ارزیابی تخصصی احتمال درگیری استخوان و بررسی‌های لازم ضروری است.');
+ if(et==='arterial'||(get('wIschemia')!==''&&Number(get('wIschemia'))>=2))riskFlags.push('احتمال ایسکمی/اختلال پرفیوژن: ارزیابی عروقی سریع؛ فشرده‌سازی و دبریدمان بدون ارزیابی تخصصی انجام نشود.');
+ if(infection==='severe'||(temp>=38&&temp<50)||hr>=120)riskFlags.push('علائم سیستمیک یا عفونت شدید ثبت شده: ارزیابی فوری حضوری؛ در بدحالی عمومی، اورژانس.');
+ if(checked('sPus')||checked('sOdor')||signs>=2)riskFlags.push('علائم موضعی مشکوک به عفونت/التهاب ثبت شده؛ گسترش قرمزی، گرمی، تورم، درد و ترشح پایش و معاینه شود.');
+ if(tissue[2]>0)riskFlags.push('نکروز ثبت شده: خون‌رسانی و ایمنی دبریدمان باید توسط متخصص بررسی شود.');
+ if(pain>=7)riskFlags.push('درد شدید: ارزیابی علت، از جمله ایسکمی یا عفونت، لازم است.');
+ if(!riskFlags.length)riskFlags.push('عامل خطر مشخصی از ورودی‌های فعلی استخراج نشد؛ این موضوع خطر را رد نمی‌کند و ارزیابی کامل بیمار ضروری است.');
+ const tissueSummary=`گرانولاسیون ${tissue[0]}٪، اسلاف ${tissue[1]}٪، نکروز ${tissue[2]}٪، اپی‌تلیال ${tissue[3]}٪`;
+ const exSummary=`مقدار: ${exudate||'ثبت نشده'}؛ نوع: ${exType||'ثبت نشده'}`;
+ const gradeSummary=grades.length?grades.join(' | '):'گریدی انتخاب نشده است. ابزار مناسب باید با توجه به اتیولوژی انتخاب و توسط فرد آموزش‌دیده ثبت شود.';
+ const domains=[
+  ['۱. طبقه‌بندی و گریدبندی',`اتیولوژی ثبت‌شده: ${etiologyLabels[et]||et}. ${gradeSummary}`],
+  ['۲. بستر و بافت زخم',tissueSummary+'؛ مجموع درصدها باید حداکثر ۱۰۰ باشد.'],
+  ['۳. ترشحات',exSummary+'؛ رنگ، بو، قوام و تغییر نسبت به ویزیت قبل نیز ثبت شود.'],
+  ['۴. عفونت و التهاب',`شدت ثبت‌شده: ${infection||'نامشخص'}؛ ${signs} علامت موضعی انتخاب شده است. تشخیص عفونت نیازمند معاینه است.`],
+  ['۵. خطرها و هشدارها',riskFlags.join(' ')],
+  ['۶. ملاحظات انتخاب پانسمان',dressing],
+  ['۷. پلن و پیگیری','پاک‌سازی طبق پروتکل مرکز، محافظت پوست اطراف، کنترل علت زمینه‌ای، کاهش فشار در صورت اندیکاسیون و ثبت تصویر/ابعاد استاندارد در پیگیری؛ زمان‌بندی با شدت و نظر درمانگر تعیین شود.']
+ ];
+ const seven=$('#clinicalSevenOutput');
+ if(seven) seven.innerHTML=domains.map((d,i)=>`<article class="clinical-domain"><b>${d[0]}</b><p>${d[1]}</p></article>`).join('');
+ // Append specific exudate/dressing considerations to the editable plan, without prescribing a product.
+ plan.push('ارزیابی ترشح: '+exSummary+'. '+dressing);
+ plan.push('مرور خطرها: '+riskFlags.join(' '));
+ if(grades.length)plan.push('طبقه‌بندی‌های ثبت‌شده توسط ارزیاب: '+grades.join('؛ ')+'.');
+
  const title=`پیش‌نویس پلن مراقبت — ${urgency}`;
  const box=$('#carePlanOutput');
  box.innerHTML=`<div class="plan-banner ${urgent?'urgent':''}"><b>${title}</b><small>پیشنهاد پشتیبان تصمیم؛ نه دستور درمان یا نسخه</small></div><ol>${plan.map(x=>`<li>${x}</li>`).join('')}</ol><label class="plan-review"><input type="checkbox" id="planReviewed"> این پیش‌نویس توسط درمانگر بازبینی و اصلاح شده است.</label><textarea id="planEdits" rows="3" placeholder="اصلاحات، مسئول اقدام و جزئیات برنامه مورد تأیید درمانگر..."></textarea><button class="secondary-btn" id="savePlanToAssessment" type="button">ذخیره پیش‌نویس پلن در ارزیابی</button>`;
  $('#savePlanToAssessment').onclick=()=>{
    const wid=get('assessmentWound'); if(!wid){toast('ابتدا زخم را انتخاب کنید.');return}
-   state.assessments.push({id:id(),woundId:wid,created:new Date().toISOString(),kind:'care-plan-draft',data:{urgency,items:plan,reviewed:$('#planReviewed').checked,clinicianEdits:$('#planEdits').value,disclaimer:'Draft decision support only; clinician approval required.'}});
+   state.assessments.push({id:id(),woundId:wid,created:new Date().toISOString(),kind:'care-plan-draft',data:{urgency,items:plan,clinicalDomains:domains,gradeSummary,riskFlags,dressingConsiderations:dressing,reviewed:$('#planReviewed').checked,clinicianEdits:$('#planEdits').value,disclaimer:'Draft decision support only; clinician approval required.'}});
    persist();toast('پیش‌نویس پلن ذخیره شد.');
  };
 }
-$('#calculateScores')?.addEventListener('click',computeClinicalScores);
+$('#calculateScores')?.addEventListener('click',()=>{computeClinicalScores();buildCarePlan()});
 $('#generateCarePlan')?.addEventListener('click',()=>{computeClinicalScores();buildCarePlan()});
 
+const clinicalRefreshIds=['aEtiology','aPain','aTemp','aHR','aBP','aRR','aSpO2','aPTB','aExudate','aExudateType','aInfection','aNpiap','aWagner','aUTGrade','aUTStage','wWound','wIschemia','wInfection','tGran','tSlough','tNecrosis','tEpi','sRed','sWarm','sSwelling','sPain','sPus','sOdor','sinSite','sinIsch','sinNeuro','sinInfect','sinArea','sinDepth','pushArea','pushExudate','pushTissue',...Array.from({length:13},(_,i)=>'bwat'+(i+1))];
+clinicalRefreshIds.forEach(id=>{const el=$('#'+id); if(el)el.addEventListener('change',()=>{computeClinicalScores();buildCarePlan()})});
+// Initial render: the seven clinical domains are present on opening the assessment page, not hidden behind a button.
+computeClinicalScores();
+buildCarePlan();
 
 ['sinSite','sinIsch','sinNeuro','sinInfect','sinArea','sinDepth','pushArea','pushExudate','pushTissue','aWagner','aUTGrade','aUTStage','aNpiap','wWound','wIschemia','wInfection',...Array.from({length:13},(_,i)=>'bwat'+(i+1))].forEach(k=>$('#'+k)?.addEventListener('change',()=>{if($('#computedScores')?.dataset.auto==='1')computeClinicalScores()}));
 

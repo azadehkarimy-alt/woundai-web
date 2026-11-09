@@ -127,3 +127,14 @@
 .patient-avatar{overflow:hidden;padding:0!important;display:flex;align-items:center;justify-content:center}
 .patient-avatar img{width:100%;height:100%;object-fit:cover}
 @media(max-width:520px){.patient-photo-row{align-items:flex-start}.patient-photo-preview{width:88px;height:100px;flex-basis:88px}}
+
+/* v10: seven-domain wound assessment output */
+.clinical-seven{margin-top:22px;padding:18px;border:1px solid #d7e6eb;border-radius:18px;background:#f7fbfc}
+.clinical-seven h3{margin:0 0 8px;color:#092e4b;font-size:18px}
+.clinical-seven-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.clinical-domain{padding:14px;border:1px solid #dce8ec;border-radius:13px;background:#fff;min-width:0}
+.clinical-domain b{display:block;color:#087f82;font-size:14px;margin-bottom:7px}
+.clinical-domain p{margin:0;color:#304d5c;font-size:13px;line-height:1.9;overflow-wrap:anywhere}
+.clinical-domain:nth-child(5){border-color:#e9c8b8;background:#fffaf7}
+.clinical-domain:nth-child(6){border-color:#c9e2e0;background:#f5fbfa}
+@media(max-width:650px){.clinical-seven{padding:13px}.clinical-seven-grid{grid-template-columns:1fr}.clinical-domain{padding:12px}.clinical-domain p{font-size:12px}}
