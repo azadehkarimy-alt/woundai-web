@@ -21,3 +21,109 @@
 .camera-stage{touch-action:manipulation}
 #drawCanvas{touch-action:pan-y}
 @media(max-width:700px){.brand-card img{width:180px;max-height:72px}.photo-guide{font-size:.9rem}.camera-actions>*{flex:1 1 42%}}
+
+/* v5 usability: full-width image workspace and guided boundary editing */
+.imaging-layout{display:flex;flex-direction:column;gap:16px}
+.camera-stage{width:100%;height:auto;min-height:0;max-height:none;aspect-ratio:4/3;background:#061f38}
+.camera-stage video,.camera-stage img,.camera-stage canvas{object-fit:contain}
+.camera-stage img,.camera-stage canvas{background:transparent}
+#drawCanvas{touch-action:none;cursor:crosshair}
+.trace-toolbar{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 8px}
+.trace-tool{border:1px solid #d5e5e9;background:#f4f8fa;color:#123a55;border-radius:11px;padding:11px 6px;font-size:11px;font-weight:700;min-height:46px}
+.trace-tool.active{background:#082b4b;color:#fff;border-color:#00b9a9;box-shadow:inset 0 -3px #00b9a9}
+.trace-tool:disabled{opacity:.45;cursor:not-allowed}
+.trace-help{font-size:11px;line-height:1.8;color:#557180;background:#edf7f7;border-radius:10px;padding:10px 12px;margin:8px 0 12px}
+.clinical-scope-note{display:flex;gap:10px;align-items:flex-start;background:#edf7fa;border:1px solid #d5e9ef;border-inline-start:4px solid #00a99d;border-radius:13px;padding:13px 15px;margin:0 0 17px;color:#214a61;font-size:11px;line-height:1.9}
+.clinical-scope-note b{white-space:nowrap;color:#087f7a}
+#page-clinical .panel{padding:20px}
+#page-clinical .form-grid{gap:4px 14px}
+#page-clinical .field{background:#fbfdfe;border:1px solid #edf2f4;border-radius:10px;padding:10px}
+#page-clinical .field label{line-height:1.7}
+#page-clinical input,#page-clinical select,#page-clinical textarea{min-height:42px}
+#page-clinical .classification-result{background:#edf7fa;border-color:#d4e9ef}
+@media(max-width:760px){
+ .camera-stage{min-height:0;max-height:none;aspect-ratio:4/3}
+ .trace-toolbar{grid-template-columns:1fr 1fr}
+ .trace-toolbar #finishTrace{grid-column:span 2}
+ .clinical-scope-note{display:grid}
+ #page-clinical .panel{padding:12px}
+}
+
+/* v6: scale immediately above photo; wound boundary and area immediately below */
+.scale-near-photo{margin:12px 0 10px;padding:12px;border:1px solid #d8e9ee;border-radius:14px;background:#f1f8fa}
+.scale-near-photo>b,.boundary-near-photo>b{display:block;color:#0a3856;font-weight:800;font-size:13px;margin-bottom:9px}
+.scale-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:end}
+.scale-controls .field{margin:0}
+.scale-controls #selectScaleLine,.scale-controls #calibrateBtn,.scale-controls #calibrationStatus,.scale-controls .micro-note{grid-column:1/-1}
+.boundary-near-photo{margin:12px 0 0;padding:13px;border:1px solid #d8e9ee;border-radius:14px;background:#f8fbfc}
+.boundary-near-photo .trace-toolbar{margin-top:8px}
+.boundary-near-photo .measure-actions{display:flex;gap:8px;margin:10px 0}
+.boundary-near-photo .measure-result{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:10px 0;padding:12px;border-radius:11px;background:#eaf5f7}
+.boundary-near-photo .measure-result strong{font-size:20px;color:#073d5a}
+.boundary-near-photo #saveImageRecord{margin-top:8px}
+.clinical-output{margin-top:18px}
+.decision-actions{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.computed-scores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.score-row{display:grid;grid-template-columns:1fr auto;gap:6px;padding:11px;border:1px solid #dce9ed;border-radius:11px;background:#f8fbfc}
+.score-row strong{color:#087f82}
+.score-row small{grid-column:1/-1;color:#587080;line-height:1.7}
+.care-plan-output{border:1px solid #dce9ed;border-radius:13px;padding:14px;margin-top:12px}
+.care-plan-output ol{padding-inline-start:22px;line-height:1.9}
+.care-plan-output li{margin:6px 0}
+.plan-banner{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:10px;background:#eaf5f7;color:#123d56}
+.plan-banner.urgent{background:#fff0ed;color:#922e20;border:1px solid #f2c5bb}
+.plan-banner small{font-size:11px}
+.plan-review{display:flex;align-items:center;gap:8px;margin:12px 0}
+#planEdits{width:100%;margin:8px 0}
+@media(max-width:760px){
+ .scale-controls{grid-template-columns:1fr}
+ .computed-scores{grid-template-columns:1fr}
+ .decision-actions>*{width:100%}
+}
+
+/* v7 downloadable wound assessment sheet */
+.report-sheet-maker{grid-column:1/-1;border:1px solid #cfe5e9;background:linear-gradient(145deg,#fff,#f3f9fa)}
+.report-sheet-maker .form-grid{margin:16px 0}
+.report-export-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.report-preview{border:1px dashed #9abdc5;background:#f7fbfc;border-radius:13px;min-height:84px;padding:18px;display:flex;flex-direction:column;gap:9px;color:#24485d}
+.report-preview small{font-size:11px;color:#66808d}
+@media(max-width:650px){.report-export-actions{grid-template-columns:1fr}.report-sheet-maker{padding:15px}}
+
+/* v8: approved brand mark visibility and ANN/CNN/SVM research architecture */
+.brand-card{padding:12px 12px 10px;min-height:150px;display:flex;flex-direction:column;justify-content:center;gap:5px}
+.brand-card img{width:100%;height:122px;max-height:122px;object-fit:contain;transform:scale(1.04)}
+.brand-sub{font-size:11px;margin-top:0;line-height:1.6}
+.logo-avatar{width:48px!important;height:48px!important;min-width:48px}
+.logo-avatar img{padding:2px}
+.ai-architecture-panel{margin-top:18px}
+.ai-model-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}
+.ai-model-card{border:1px solid #dce9ed;border-radius:15px;padding:15px;background:#f8fbfc;min-width:0}
+.ai-model-card h3{font-size:16px;margin:10px 0 7px;color:#092e4b}
+.ai-model-card b{font-size:12px;color:#087f82;display:block;line-height:1.7}
+.ai-model-card p,.ai-model-card small{font-size:11px;line-height:1.85;color:#536d7b}
+.ai-model-mark{display:inline-flex;align-items:center;justify-content:center;min-width:58px;height:38px;padding:0 12px;border-radius:10px;background:#092e4b;color:#fff;font-size:17px;font-weight:800;letter-spacing:1px}
+.ai-model-card.ann{border-top:4px solid #00a99d}
+.ai-model-card.cnn{border-top:4px solid #1d6fa5}
+.ai-model-card.svm{border-top:4px solid #6686a0}
+.ai-pipeline{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;padding:13px;border-radius:12px;background:#edf6f8;color:#173e56;font-size:11px;line-height:1.7}
+.ai-pipeline span{background:#fff;border:1px solid #d9e9ed;border-radius:8px;padding:7px 10px}
+.ai-pipeline i{font-style:normal;color:#009e95;font-weight:800}
+@media(max-width:760px){
+ .brand-card{min-height:128px;padding:8px 8px 7px}
+ .brand-card img{height:104px;max-height:104px}
+ .brand-sub{font-size:10px}
+ .ai-model-grid{grid-template-columns:1fr}
+ .ai-model-card{padding:13px}
+ .ai-pipeline{justify-content:flex-start}
+}
+
+/* v9 patient portrait upload */
+.patient-photo-row{display:flex;align-items:center;gap:15px;padding:12px;border:1px dashed #bdd5dc;border-radius:13px;background:#f7fbfc}
+.patient-photo-preview{width:104px;height:116px;flex:0 0 104px;border-radius:12px;background:#eaf2f5;border:1px solid #d6e4e9;display:flex;align-items:center;justify-content:center;overflow:hidden;color:#67808d;font-size:11px}
+.patient-photo-preview img{width:100%;height:100%;object-fit:cover}
+.patient-photo-actions{display:flex;flex-direction:column;gap:7px;min-width:0}
+.patient-photo-actions input{max-width:100%;font-size:11px}
+.patient-photo-actions small{font-size:10px;line-height:1.7;color:#667e8b}
+.patient-avatar{overflow:hidden;padding:0!important;display:flex;align-items:center;justify-content:center}
+.patient-avatar img{width:100%;height:100%;object-fit:cover}
+@media(max-width:520px){.patient-photo-row{align-items:flex-start}.patient-photo-preview{width:88px;height:100px;flex-basis:88px}}
