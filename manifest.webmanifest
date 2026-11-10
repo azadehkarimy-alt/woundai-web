@@ -5,8 +5,8 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f3f8fa",
-  "theme_color": "#082b4b",
+  "background_color": "#EAF8F7",
+  "theme_color": "#092C4C",
   "lang": "fa",
   "dir": "rtl",
   "icons": [
@@ -19,6 +19,12 @@
     {
       "src": "assets/woundai-icon-512.png",
       "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/woundai-logo-square.png",
+      "sizes": "1254x1254",
       "type": "image/png",
       "purpose": "any"
     }
