@@ -1,0 +1,49 @@
+{
+  "registry_version": "1.0",
+  "reviewed_on": "2026-11-10",
+  "disclaimer": "Guideline references support clinician-facing prompts only. Confirm the full guideline, local protocol, patient-specific factors, professional scope and current revisions before applying.",
+  "guidelines": [
+    {
+      "id": "IWII-2026-4E",
+      "title": "Wound infection in clinical practice: Principles of best practice, Fourth Edition",
+      "publisher": "International Wound Infection Institute / Wounds International",
+      "published": "2026-09-23",
+      "url": "https://woundsinternational.com/consensus-documents/wound-infection-in-clinical-practice-principles-of-best-practice-fourth-edition/",
+      "scope": "Wound infection assessment, prevention and management."
+    },
+    {
+      "id": "IWGDF-IDSA-2023",
+      "title": "IWGDF/IDSA Guidelines on the Diagnosis and Treatment of Diabetes-Related Foot Infections",
+      "publisher": "IWGDF / IDSA",
+      "published": "2023-10-02",
+      "url": "https://www.idsociety.org/practice-guideline/diabetic-foot-infections/",
+      "scope": "Clinical diagnosis and severity classification of diabetes-related foot infection; microbiology and referral.",
+      "notes": "Current published edition used in this build; IWGDF states the practical guidance will be updated in 2027."
+    },
+    {
+      "id": "IWGDF-OFFLOAD-2023",
+      "title": "Guidelines on offloading foot ulcers in persons with diabetes",
+      "publisher": "IWGDF",
+      "published": "2023",
+      "url": "https://iwgdfguidelines.org/offloading-guideline-2023/",
+      "scope": "Offloading selection, including neuropathic plantar forefoot/midfoot ulcers.",
+      "notes": "Current published edition used in this build; review when the next IWGDF update is released."
+    },
+    {
+      "id": "NPIAP-EPUAP-PPPIA-2026-4E",
+      "title": "Prevention and Treatment of Pressure Ulcers/Injuries: Clinical Practice Guideline, Fourth Edition",
+      "publisher": "NPIAP / EPUAP / PPPIA",
+      "published": "2026-09 (QRG final version)",
+      "url": "https://www.internationalguideline.com/the-international-guideline",
+      "scope": "Pressure injury risk, skin/tissue assessment, classification, nutrition, repositioning, support surfaces and wound healing."
+    },
+    {
+      "id": "NICE-NG152",
+      "title": "Leg ulcer infection: antimicrobial prescribing",
+      "publisher": "NICE",
+      "published": "2020-02-11",
+      "url": "https://www.nice.org.uk/guidance/ng152/chapter/recommendations",
+      "scope": "Antimicrobial stewardship and reassessment for clinically infected leg ulcers; not a general venous-ulcer compression guideline."
+    }
+  ]
+}
