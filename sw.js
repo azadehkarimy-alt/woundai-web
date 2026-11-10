@@ -1,4 +1,4 @@
-const CACHE='woundai-pro-v10-1';const FILES=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icon.svg','./woundai-logo.png','./assets/woundai-icon-192.png','./assets/woundai-icon-512.png','./assets/woundai-logo.png'];
+const CACHE='woundai-stage10-release-candidate-v1';const FILES=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icon.svg','./woundai-logo.png','./assets/woundai-icon-192.png','./assets/woundai-icon-512.png','./assets/woundai-logo.png'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k))))));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request).then(r=>{const copy=r.clone();caches.open(CACHE).then(x=>x.put(e.request,copy));return r}).catch(()=>caches.match('./index.html'))))});

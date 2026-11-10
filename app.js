@@ -1,12 +1,38 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const DB='woundai_pro_local_v2';let state={patients:[],wounds:[],assessments:[],images:[]};let lang='fa',stream=null,currentImage=null,points=[],calibration=null,calibrationMode=false,calibrationPoints=[],cameraFacing='environment';
+const DB='woundai_pro_local_v2';let state={patients:[],wounds:[],assessments:[],images:[],aiModel:null};let lang='fa',stream=null,currentImage=null,points=[],calibration=null,calibrationMode=false,calibrationPoints=[],cameraFacing='environment';
 const tr={
 fa:{dashboard:'داشبورد',patients:'بیماران',imaging:'تصویربرداری و اندازه‌گیری',reports:'گزارش‌ها',security:'امنیت و پشتیبان‌گیری',workspace:'فضای کاری کلینیک',localMode:'حالت ذخیره‌سازی محلی',clinicalWorkspace:'فضای کاری بالینی',safetyNotice:'نسخه آزمایشی و پژوهشی؛ خروجی‌ها جایگزین ارزیابی و تشخیص متخصص نیستند. از اطلاعات واقعی بیمار در این نسخه استفاده نکنید.',overview:'نمای کلی',welcome:'خوش آمدید به',dashboardDesc:'مدیریت پرونده‌ها، ارزیابی‌های بالینی و پایش روند زخم در یک فضای یکپارچه.',newPatient:'ثبت بیمار جدید',totalPatients:'کل بیماران',savedOnDevice:'ذخیره‌شده در این دستگاه',activeWounds:'زخم‌های فعال',acrossRecords:'در تمام پرونده‌ها',assessments:'ارزیابی‌ها',clinicalEntries:'ثبت‌های بالینی',followups:'پیگیری‌های ثبت‌شده',plannedFollowups:'برنامه‌های پیگیری',recentPatients:'بیماران اخیر',recentPatientsDesc:'آخرین پرونده‌های ثبت‌شده',viewAll:'مشاهده همه ←',noPatients:'هنوز بیماری ثبت نشده است',addFirstPatient:'برای شروع، اولین پرونده را ایجاد کنید.',quickActions:'دسترسی سریع',quickActionsDesc:'شروع یک فرایند جدید',registerPatient:'ثبت بیمار',createPatientRecord:'ایجاد پرونده و سوابق پایه',captureWound:'تصویربرداری زخم',cameraOrGallery:'دوربین یا انتخاب تصویر',exportData:'خروجی و پشتیبان',backupRecords:'دریافت نسخه پشتیبان اطلاعات',modules:'ماژول‌های تخصصی WoundAI',modulesDesc:'ساختار پرونده و ارزیابی مطابق مشخصات بالینی پروژه',patientManagement:'مدیریت بیمار و چند زخم',patientManagementDesc:'پرونده مستقل، سوابق، مراجعات و رضایت',clinicalForms:'فرم‌های ارزیابی تخصصی',imageAnalysis:'تصویربرداری و اندازه‌گیری',imageAnalysisDesc:'دوربین، کالیبراسیون و ترسیم مرز دستی',longitudinal:'پایش طولی و گزارش',longitudinalDesc:'تاریخچه ارزیابی و خروجی قابل نگهداری',records:'پرونده‌ها',patientDirectory:'فهرست بیماران',patientDirectoryDesc:'پرونده‌ها را جست‌وجو و مدیریت کنید.',allRecords:'همه پرونده‌ها',active:'فعال',archived:'بایگانی‌شده',imagingTitle:'تصویربرداری و اندازه‌گیری زخم',imagingDesc:'تصویر را ثبت کنید، مقیاس را کالیبره و مرز را دستی ترسیم کنید.',imageSource:'منبع تصویر',cameraSecure:'برای دوربین، سایت باید با HTTPS باز شده باشد.',openCamera:'باز کردن دوربین',chooseImage:'انتخاب از گالری',switchCamera:'تعویض دوربین',cameraPlaceholder:'پیش‌نمایش تصویر زخم',cameraHelp:'دوربین را باز کنید یا یک تصویر انتخاب کنید.',cameraIdle:'دوربین هنوز فعال نشده است.',stopCamera:'توقف دوربین',measurementTools:'ابزارهای اندازه‌گیری',manualOnly:'ترسیم دستی؛ تأیید نهایی با ارزیاب',calibrationLength:'طول مرجع (سانتی‌متر)',calibrationPixels:'طول همان خط روی تصویر (پیکسل)',calibrate:'ثبت کالیبراسیون',calibrationNeeded:'برای محاسبه سانتی‌متر مربع، کالیبراسیون معتبر لازم است.',undo:'بازگشت نقطه',clearDrawing:'پاک‌کردن ترسیم',manualArea:'مساحت ترسیم‌شده',drawHint:'برای ترسیم، روی تصویر چند نقطه بزنید.',saveImageAssessment:'ذخیره ارزیابی تصویر',depthWarning:'عمق زخم از عکس دوبعدی محاسبه نمی‌شود؛ آن را با روش بالینی جداگانه ثبت کنید.',aiStatusTitle:'وضعیت هوش مصنوعی',aiStatusBody:'مدل تشخیص و قطعه‌بندی بالینیِ اعتبارسنجی‌شده در این بسته نصب نشده است. این نسخه مرز زخم را به‌صورت خودکار تشخیص نمی‌دهد و نتیجه ساختگی تولید نمی‌کند. محل اتصال مدل AI و ثبت بازبینی متخصص در معماری پیش‌بینی شده است.',researchOnly:'پژوهشی / در انتظار مدل معتبر',reportsTitle:'گزارش و پشتیبان‌گیری',reportsDesc:'از اطلاعات محلی خروجی بگیرید و در صورت نیاز بازیابی کنید.',backupTitle:'دریافت نسخه پشتیبان',backupDesc:'پرونده‌ها، زخم‌ها، ارزیابی‌ها و تصاویر ذخیره‌شده در این مرورگر در یک فایل خروجی قرار می‌گیرند.',downloadBackup:'دانلود پشتیبان JSON',restoreTitle:'بازیابی نسخه پشتیبان',restoreDesc:'فایل پشتیبان قبلی را انتخاب کنید. داده‌ها به اطلاعات موجود اضافه می‌شوند.',summaryTitle:'خلاصه پرونده‌ها',summaryDesc:'خروجی خلاصه بیماران و زخم‌ها برای بررسی و بایگانی.',downloadCsv:'دانلود CSV بیماران',localStorageWarning:'محدودیت مهم ذخیره‌سازی',localStorageWarningBody:'این نسخه برای نمونه‌سازی، داده‌ها را فقط در حافظه مرورگر همین دستگاه نگه می‌دارد. ورود با شناسه، همگام‌سازی بین دستگاه‌ها، رمزنگاری سمت سرور، کنترل نقش واقعی و پشتیبان‌گیری خودکار سروری هنوز فعال نیست. برای اطلاعات واقعی بیمار، ابتدا باید بک‌اند امن، میزبانی مجاز، کنترل دسترسی و آزمون امنیتی راه‌اندازی شود.',securityTitle:'امنیت، حریم خصوصی و دسترسی',securityDesc:'وضعیت فعلی و الزامات نسخه عملیاتی',currentPrototype:'وضعیت این نمونه',localOnly:'ذخیره محلی روی همین مرورگر',manualBackup:'خروجی و بازیابی دستی',noCloudAuth:'ورود و احراز هویت ابری',noEncryption:'رمزنگاری و تفکیک مرکز در سرور',productionChecklist:'الزامات پیش از استفاده واقعی',secureAuth:'احراز هویت امن، MFA و بازیابی حساب',roleAccess:'نقش‌ها و مجوزهای دسترسی در سطح مرکز و پرونده',encryptedStorage:'پایگاه داده و فضای تصویر رمزنگاری‌شده',auditTrail:'ثبت رویدادهای مشاهده، ایجاد، ویرایش و حذف',gdprReview:'بازبینی GDPR / DPIA و الزامات MDR متناسب با بازار',backupRestore:'پشتیبان‌گیری خودکار و آزمون بازیابی',footerNote:'سامانه مستندسازی و پشتیبان تصمیم بالینی • نسخه نمونه‌سازی',patientProfile:'پرونده بیمار',fullName:'نام و نام خانوادگی',recordCode:'کد پرونده',birthDate:'تاریخ تولد',sex:'جنس',unknown:'نامشخص',female:'زن',male:'مرد',diabetes:'دیابت',vascularDisease:'بیماری عروقی / PAD',allergies:'آلرژی‌ها',medicalHistory:'سوابق پزشکی، داروها و توضیحات',consentText:'رضایت ثبت اطلاعات در نسخه آزمایشی (بدون اطلاعات هویتی واقعی)',cancel:'انصراف',savePatient:'ذخیره پرونده',yes:'بله',no:'خیر'},
 en:{dashboard:'Dashboard',patients:'Patients',imaging:'Imaging & Measurement',reports:'Reports',security:'Security & Backup',workspace:'Clinic workspace',localMode:'Local storage mode',clinicalWorkspace:'CLINICAL WORKSPACE',safetyNotice:'Research prototype. Outputs do not replace professional assessment or diagnosis. Do not enter real patient data.',overview:'OVERVIEW',welcome:'Welcome to',dashboardDesc:'Manage records, clinical assessments and wound progress in one workspace.',newPatient:'New patient',totalPatients:'Total patients',savedOnDevice:'Saved on this device',activeWounds:'Active wounds',acrossRecords:'Across all records',assessments:'Assessments',clinicalEntries:'Clinical entries',followups:'Follow-ups',plannedFollowups:'Follow-up plans',recentPatients:'Recent patients',recentPatientsDesc:'Latest patient records',viewAll:'View all →',noPatients:'No patients registered yet',addFirstPatient:'Create the first record to get started.',quickActions:'Quick actions',quickActionsDesc:'Start a workflow',registerPatient:'Register patient',createPatientRecord:'Create a patient record and history',captureWound:'Wound imaging',cameraOrGallery:'Camera or image upload',exportData:'Export & backup',backupRecords:'Download a data backup',modules:'WoundAI clinical modules',modulesDesc:'Record and assessment structure based on the clinical specification',patientManagement:'Patient & multi-wound records',patientManagementDesc:'Separate records, history, encounters and consent',clinicalForms:'Specialized assessment forms',imageAnalysis:'Imaging & measurement',imageAnalysisDesc:'Camera, calibration and manual boundary tracing',longitudinal:'Longitudinal monitoring & reports',longitudinalDesc:'Assessment history and exportable reports',records:'RECORDS',patientDirectory:'Patient directory',patientDirectoryDesc:'Search and manage patient records.',allRecords:'All records',active:'Active',archived:'Archived',imagingTitle:'Wound imaging & measurement',imagingDesc:'Capture an image, calibrate scale and manually trace the boundary.',imageSource:'Image source',cameraSecure:'Camera access requires HTTPS.',openCamera:'Open camera',chooseImage:'Choose image',switchCamera:'Switch camera',cameraPlaceholder:'Wound image preview',cameraHelp:'Open the camera or choose an image.',cameraIdle:'Camera is not active.',stopCamera:'Stop camera',measurementTools:'Measurement tools',manualOnly:'Manual tracing; clinician confirmation required',calibrationLength:'Reference length (cm)',calibrationPixels:'Same line length in image (pixels)',calibrate:'Set calibration',calibrationNeeded:'Valid calibration is required to calculate cm².',undo:'Undo point',clearDrawing:'Clear drawing',manualArea:'Traced area',drawHint:'Tap several points on the image to trace.',saveImageAssessment:'Save image assessment',depthWarning:'Wound depth cannot be derived from a 2D photo; record it separately using a clinical method.',aiStatusTitle:'AI status',aiStatusBody:'No clinically validated detection or segmentation model is installed in this package. This version does not automatically detect wound boundaries or fabricate results. The architecture reserves an integration point for a validated model and clinician review.',researchOnly:'Research / awaiting validated model',reportsTitle:'Reports & backup',reportsDesc:'Export locally stored data and restore it when needed.',backupTitle:'Download backup',backupDesc:'Patients, wounds, assessments and locally stored images are bundled into one export file.',downloadBackup:'Download JSON backup',restoreTitle:'Restore backup',restoreDesc:'Select a previous backup file. Data will be added to existing records.',summaryTitle:'Record summary',summaryDesc:'Export a patient and wound summary for review and archiving.',downloadCsv:'Download patient CSV',localStorageWarning:'Important storage limitation',localStorageWarningBody:'This prototype stores data only in this browser on this device. Account login, cross-device sync, server-side encryption, real role controls and automatic server backups are not active. A secure backend, compliant hosting, access controls and security testing are required before real patient data can be used.',securityTitle:'Security, privacy & access',securityDesc:'Current status and production requirements',currentPrototype:'Prototype status',localOnly:'Local storage in this browser',manualBackup:'Manual export and restore',noCloudAuth:'Cloud login and authentication',noEncryption:'Server encryption and clinic isolation',productionChecklist:'Before real-world use',secureAuth:'Secure authentication, MFA and account recovery',roleAccess:'Role-based permissions at clinic and record level',encryptedStorage:'Encrypted database and image storage',auditTrail:'Audit events for viewing, creation, editing and deletion',gdprReview:'GDPR / DPIA and applicable medical-device review',backupRestore:'Automated backups and restore testing',footerNote:'Clinical documentation and decision-support system • Prototype',patientProfile:'PATIENT PROFILE',fullName:'Full name',recordCode:'Record code',birthDate:'Date of birth',sex:'Sex',unknown:'Unknown',female:'Female',male:'Male',diabetes:'Diabetes',vascularDisease:'Vascular disease / PAD',allergies:'Allergies',medicalHistory:'Medical history, medications and notes',consentText:'I agree to enter test data in this prototype (no real identifying information)',cancel:'Cancel',savePatient:'Save patient',yes:'Yes',no:'No'}};
 function applyLang(){document.documentElement.lang=lang;document.documentElement.dir=lang==='fa'?'rtl':'ltr';$$('[data-i18n]').forEach(el=>{let k=el.dataset.i18n;if(tr[lang][k])el.textContent=tr[lang][k]});$('#langBtn').textContent=lang==='fa'?'EN':'FA';$('#pageTitle').textContent=tr[lang][currentPage]||tr[lang].dashboard;$('#patientSearch').placeholder=lang==='fa'?'جست‌وجو با نام یا کد پرونده…':'Search name or record code…';}
-let currentPage='dashboard';function goto(page){currentPage=page;$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('#pageTitle').textContent=tr[lang][page]||tr[lang].dashboard;$('#sidebar').classList.remove('open');if(page==='patients')renderPatients();}
-function load(){try{let x=JSON.parse(localStorage.getItem(DB)||'{}');state={...state,...x}}catch(e){console.warn(e)}renderStats();}
-function persist(){localStorage.setItem(DB,JSON.stringify(state));renderStats();}
+let currentPage='dashboard';function goto(page){currentPage=page;if(page==='ai')refreshAnnStatus();$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));$$('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));$('#pageTitle').textContent=tr[lang][page]||tr[lang].dashboard;$('#sidebar').classList.remove('open');if(page==='patients')renderPatients();}
+function load(){
+ try{
+  const raw=localStorage.getItem(DB);
+  const x=raw?JSON.parse(raw):{};
+  const valid= x && typeof x==='object' && !Array.isArray(x);
+  if(valid){
+   state.patients=Array.isArray(x.patients)?x.patients:[];
+   state.wounds=Array.isArray(x.wounds)?x.wounds:[];
+   state.assessments=Array.isArray(x.assessments)?x.assessments:[];
+   state.images=Array.isArray(x.images)?x.images:[];state.aiModel=x.aiModel||null;
+  }
+ }catch(e){console.error('WoundAI load error',e);showStorageError('اطلاعات ذخیره‌شده قابل خواندن نیست. پیش از پاک‌کردن داده‌ها، نسخه پشتیبان را بررسی کنید.');}
+ renderStats();
+}
+function persist(){
+ try{
+  localStorage.setItem(DB,JSON.stringify(state));
+  renderStats();
+  return true;
+ }catch(e){
+  console.error('WoundAI save error',e);
+  showStorageError(e?.name==='QuotaExceededError'?'فضای ذخیره‌سازی این مرورگر پر شده است. تصویرهای بزرگ را کاهش دهید و نسخه پشتیبان بگیرید.':'ذخیره‌سازی مرورگر در دسترس نیست. تنظیمات مرورگر را بررسی کنید.');
+  return false;
+ }
+}
+function showStorageError(message){
+ const t=$('#toast');if(t){t.textContent=message;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),6000);}
+}
 function id(){return crypto.randomUUID?crypto.randomUUID():'id-'+Date.now()+'-'+Math.random().toString(16).slice(2)}
 function toast(msg){let t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)}
 function renderStats(){$('#patientCount').textContent=state.patients.length;$('#statPatients').textContent=state.patients.length;$('#statWounds').textContent=state.wounds.filter(w=>w.status!=='closed').length;$('#statAssessments').textContent=state.assessments.length;$('#statFollowups').textContent=state.wounds.filter(w=>w.followup).length;let recent=state.patients.slice(-4).reverse();$('#recentPatients').className=recent.length?'recent-list':'recent-list empty-state';$('#recentPatients').innerHTML=recent.length?recent.map(p=>`<div class="recent-row"><span class="patient-initial">${esc((p.name||'W').slice(0,1))}</span><div><b>${esc(p.name)}</b><small>${esc(p.code)} · ${new Date(p.created).toLocaleDateString(lang==='fa'?'fa-IR':'en-US')}</small></div><button class="text-btn" data-open-patient="${p.id}">${lang==='fa'?'پرونده ←':'Open →'}</button></div>`).join(''):`<span class="empty-symbol">♙</span><b>${tr[lang].noPatients}</b><small>${tr[lang].addFirstPatient}</small>`;}
@@ -26,8 +52,9 @@ $('#pPhoto')?.addEventListener('change',async e=>{const f=e.target.files?.[0];if
 $('#removePatientPhoto')?.addEventListener('click',()=>{pendingPatientPhoto='';$('#pPhoto').value='';showPatientPhoto('')});
 
 $('#newPatientBtn').onclick=openModal;$('#addPatientBtn').onclick=openModal;$('#quickPatient').onclick=openModal;$('#closeModal').onclick=closeModal;$('#cancelPatient').onclick=closeModal;$('#modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
-$('#patientForm').onsubmit=e=>{e.preventDefault();let name=$('#pName').value.trim();if(!name)return;let p={id:id(),name,code:$('#pCode').value.trim()||'WA-'+Date.now().toString().slice(-7),dob:$('#pDob').value,sex:$('#pSex').value,diabetes:$('#pDiabetes').value,vascular:$('#pVascular').value,allergies:$('#pAllergies').value,history:$('#pHistory').value,photo:pendingPatientPhoto||'',consent:$('#pConsent').checked,created:new Date().toISOString(),status:'active'};state.patients.push(p);persist();closeModal();goto('patients');toast(lang==='fa'?'پرونده بیمار ذخیره شد.':'Patient record saved.');};
-function renderPatients(){let q=$('#patientSearch').value.toLowerCase(),f=$('#patientFilter').value;let arr=state.patients.filter(p=>(f==='all'||p.status===f)&&(`${p.name} ${p.code}`.toLowerCase().includes(q)));$('#patientList').innerHTML=arr.length?arr.map(p=>{let wounds=state.wounds.filter(w=>w.patientId===p.id);return `<article class="patient-card"><div class="patient-card-head"><span class="patient-initial patient-avatar">${p.photo?`<img src="${p.photo}" alt="عکس بیمار">`:esc(p.name.slice(0,1))}</span><span class="pill">${p.status==='active'?(lang==='fa'?'فعال':'ACTIVE'):(lang==='fa'?'بایگانی':'ARCHIVED')}</span></div><h3>${esc(p.name)}</h3><p>${lang==='fa'?'کد پرونده':'Record'}: ${esc(p.code)}</p><div class="patient-meta"><span>${wounds.length} ${lang==='fa'?'زخم':'wounds'}</span><span>${lang==='fa'?'ثبت':'Created'}: ${new Date(p.created).toLocaleDateString(lang==='fa'?'fa-IR':'en-US')}</span></div><div class="card-actions"><button class="secondary-btn" data-add-wound="${p.id}">${lang==='fa'?'＋ افزودن زخم':'＋ Add wound'}</button><button class="secondary-btn" data-archive="${p.id}">${p.status==='active'?(lang==='fa'?'بایگانی':'Archive'):(lang==='fa'?'فعال‌سازی':'Activate')}</button></div><div class="wound-list">${wounds.map(w=>`<div class="wound-row"><span>◉ ${esc(w.etiology)} · ${esc(w.site)}</span><button class="text-btn" data-assess="${w.id}">${lang==='fa'?'ارزیابی':'Assess'} ←</button></div>`).join('')}</div></article>`}).join(''):`<div class="panel empty-state"><b>${lang==='fa'?'پرونده‌ای یافت نشد':'No records found'}</b><small>${lang==='fa'?'جست‌وجو را تغییر دهید یا بیمار جدید ثبت کنید.':'Change your search or add a patient.'}</small></div>`;}
+// Legacy patient submit handler removed; the edit-aware handler below is the single source of truth.
+
+function renderPatients(){let q=$('#patientSearch').value.toLowerCase(),f=$('#patientFilter').value;let arr=state.patients.filter(p=>(f==='all'||p.status===f)&&(`${p.name} ${p.code}`.toLowerCase().includes(q)));$('#patientList').innerHTML=arr.length?arr.map(p=>{let wounds=state.wounds.filter(w=>w.patientId===p.id);return `<article class="patient-card"><div class="patient-card-head"><span class="patient-initial patient-avatar">${p.photo?`<img src="${p.photo}" alt="عکس بیمار">`:esc(p.name.slice(0,1))}</span><span class="pill">${p.status==='active'?(lang==='fa'?'فعال':'ACTIVE'):(lang==='fa'?'بایگانی':'ARCHIVED')}</span></div><h3>${esc(p.name)}</h3><p>${lang==='fa'?'کد پرونده':'Record'}: ${esc(p.code)}</p><div class="patient-meta"><span>${wounds.length} ${lang==='fa'?'زخم':'wounds'}</span><span>${lang==='fa'?'ثبت':'Created'}: ${new Date(p.created).toLocaleDateString(lang==='fa'?'fa-IR':'en-US')}</span></div><div class="card-actions"><button class="secondary-btn" data-view-patient="${p.id}">مشاهده پرونده</button><button class="secondary-btn" data-edit-patient="${p.id}">ویرایش</button><button class="secondary-btn" data-add-wound="${p.id}">${lang==='fa'?'＋ افزودن زخم':'＋ Add wound'}</button><button class="secondary-btn" data-archive="${p.id}">${p.status==='active'?(lang==='fa'?'بایگانی':'Archive'):(lang==='fa'?'فعال‌سازی':'Activate')}</button></div><div class="wound-list">${wounds.map(w=>`<div class="wound-row"><span>◉ ${esc(w.etiology)} · ${esc(w.site)}</span><button class="text-btn" data-assess="${w.id}">${lang==='fa'?'ارزیابی':'Assess'} ←</button></div>`).join('')}</div></article>`}).join(''):`<div class="panel empty-state"><b>${lang==='fa'?'پرونده‌ای یافت نشد':'No records found'}</b><small>${lang==='fa'?'جست‌وجو را تغییر دهید یا بیمار جدید ثبت کنید.':'Change your search or add a patient.'}</small></div>`;}
 $('#patientSearch').oninput=renderPatients;$('#patientFilter').onchange=renderPatients;
 function addWound(patientId){let et=prompt(lang==='fa'?'نوع زخم (دیابتی، فشاری، وریدی، شریانی، جراحی، تروماتیک، سوختگی، مختلط یا نامشخص):':'Wound type (diabetic, pressure, venous, arterial, surgical, traumatic, burn, mixed, unknown):','diabetic');if(et===null)return;let site=prompt(lang==='fa'?'محل دقیق زخم و سمت بدن:':'Exact anatomical site and laterality:','');if(site===null)return;let w={id:id(),patientId,etiology:et,site,onset:'',status:'active',created:new Date().toISOString(),followup:''};state.wounds.push(w);persist();renderPatients();toast(lang==='fa'?'زخم به پرونده افزوده شد.':'Wound added to patient.');}
 document.addEventListener('click',e=>{let a=e.target.closest('[data-page]');if(a)goto(a.dataset.page);let g=e.target.closest('[data-goto]');if(g)goto(g.dataset.goto);let o=e.target.closest('[data-open-patient]');if(o){let p=state.patients.find(x=>x.id===o.dataset.openPatient);toast(`${p.name} · ${p.code}`)}let aw=e.target.closest('[data-add-wound]');if(aw)addWound(aw.dataset.addWound);let ar=e.target.closest('[data-archive]');if(ar){let p=state.patients.find(x=>x.id===ar.dataset.archive);p.status=p.status==='active'?'archived':'active';persist();renderPatients()}let as=e.target.closest('[data-assess]');if(as){goto('imaging');toast(lang==='fa'?'زخم انتخاب شد؛ تصویر را ثبت و ارزیابی را ذخیره کنید.':'Wound selected. Capture an image and save assessment.')}});
@@ -39,7 +66,15 @@ $('#startCamera').onclick=()=>startCamera('environment');$('#switchCamera').oncl
 
 function loadImage(src){stopCamera();let img=$('#woundImage');img.onload=()=>{currentImage=src;$('#cameraStage').style.aspectRatio=`${img.naturalWidth} / ${img.naturalHeight}`;img.hidden=false;$('#cameraVideo').hidden=true;$('#cameraStage .camera-placeholder').hidden=true;let c=$('#drawCanvas');c.width=img.naturalWidth;c.height=img.naturalHeight;c.hidden=false;points=[];traceClosed=false;traceMode='add';dragPointIndex=-1;calibration=null;calibrationMode=false;calibrationPoints=[];$('#selectScaleLine').disabled=false;renderCanvas();$('#cameraStatus').textContent=lang==='fa'?'تصویر بارگذاری شد. برای ترسیم مرز روی تصویر لمس کنید.':'Image loaded. Tap the image to trace the boundary.';$('#saveImageRecord').disabled=false;$('#clearPoints').disabled=false;$('#undoPoint').disabled=true;$('#calibrationStatus').textContent=tr[lang].calibrationNeeded};img.src=src}
 $('#imageUpload').onchange=e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Invalid image');return}let reader=new FileReader();reader.onload=()=>loadImage(reader.result);reader.readAsDataURL(f)};
-function renderCanvas(){let c=$('#drawCanvas'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);if(calibrationPoints.length){ctx.strokeStyle='#ffb020';ctx.fillStyle='#ffb020';ctx.lineWidth=Math.max(4,c.width/280);ctx.beginPath();calibrationPoints.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();calibrationPoints.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(7,c.width/150),0,Math.PI*2);ctx.fill()})}if(points.length){ctx.strokeStyle='#00bfae';ctx.fillStyle='#00bfae';ctx.lineWidth=Math.max(3,c.width/350);ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(traceClosed&&points.length>2)ctx.closePath();ctx.stroke();points.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,c.width/180),0,Math.PI*2);ctx.fill()})}updateArea()}
+function renderCanvas(){let c=$('#drawCanvas'),ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);if(calibrationPoints.length){ctx.strokeStyle='#ffb020';ctx.fillStyle='#ffb020';ctx.lineWidth=Math.max(4,c.width/280);ctx.beginPath();calibrationPoints.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.stroke();calibrationPoints.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(7,c.width/150),0,Math.PI*2);ctx.fill()})}if(points.length){ctx.strokeStyle='#00bfae';ctx.fillStyle='#00bfae';ctx.lineWidth=Math.max(3,c.width/350);ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));if(traceClosed&&points.length>2)ctx.closePath();ctx.stroke();points.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,Math.max(5,c.width/180),0,Math.PI*2);ctx.fill()})}
+ if($('#measurementGridToggle')?.checked){
+  const step=Number($('#measurementGridStep')?.value||50);
+  ctx.save();ctx.strokeStyle='rgba(5,105,130,.35)';ctx.lineWidth=Math.max(1,c.width/1800);
+  for(let x=step;x<c.width;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,c.height);ctx.stroke()}
+  for(let y=step;y<c.height;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(c.width,y);ctx.stroke()}
+  ctx.restore();
+ }
+ updateArea()}
 let traceMode='add',traceClosed=false,dragPointIndex=-1;
 function canvasPoint(e){let r=e.currentTarget.getBoundingClientRect();return{x:(e.clientX-r.left)/r.width*e.currentTarget.width,y:(e.clientY-r.top)/r.height*e.currentTarget.height}}
 function nearestPoint(p){let best=-1,dist=Infinity;points.forEach((q,i)=>{let d=Math.hypot(q.x-p.x,q.y-p.y);if(d<dist){dist=d;best=i}});return dist<Math.max(18,$('#drawCanvas').width/35)?best:-1}
@@ -54,9 +89,177 @@ $('#finishTrace')?.addEventListener('click',()=>{if(points.length<3){toast(lang=
 $('#selectScaleLine').onclick=()=>{if(!currentImage){toast(lang==='fa'?'ابتدا تصویر را ثبت یا انتخاب کنید.':'Capture or choose an image first.');return}calibrationMode=true;calibrationPoints=[];renderCanvas();$('#calibrationStatus').textContent=lang==='fa'?'دو سر یک فاصله معلوم روی خط‌کش/کارت مقیاس را لمس کنید.':'Tap both ends of a known distance on the ruler/scale card.'};
 $('#undoPoint').onclick=()=>{points.pop();traceClosed=false;renderCanvas();updateTraceControls()};$('#clearPoints').onclick=()=>{points=[];traceClosed=false;renderCanvas();updateTraceControls()};
 function polygonArea(ps){let s=0;for(let i=0;i<ps.length;i++){let j=(i+1)%ps.length;s+=ps[i].x*ps[j].y-ps[j].x*ps[i].y}return Math.abs(s/2)}
-function updateArea(){let cm2=points.length>=3&&calibration?polygonArea(points)*Math.pow(calibration.cm/calibration.px,2):null;$('#areaResult').textContent=cm2===null?'— cm²':`${cm2.toFixed(2)} cm²`;$('#polygonStatus').textContent=points.length<3?(lang==='fa'?'حداقل سه نقطه برای محاسبه لازم است.':'At least 3 points are required.'):(calibration?(lang==='fa'?'مساحت بر اساس ترسیم دستی و کالیبراسیون':'Area from manual trace and calibration'):(lang==='fa'?'ترسیم ثبت شد؛ کالیبراسیون انجام نشده است.':'Trace saved; calibration missing.'))}
-$('#calibrateBtn').onclick=()=>{let cm=Number($('#referenceCm').value),px=Number($('#referencePx').value);if(!currentImage||cm<=0||px<=0){toast(lang==='fa'?'تصویر و مقادیر معتبر کالیبراسیون لازم است.':'Image and valid calibration values required.');return}calibration={cm,px,pxPerCm:px/cm};$('#calibrationStatus').textContent=lang==='fa'?`کالیبراسیون ثبت شد: ${(px/cm).toFixed(2)} پیکسل بر سانتی‌متر`:`Calibration set: ${(px/cm).toFixed(2)} px/cm`;updateArea()};
-$('#saveImageRecord').onclick=()=>{if(!currentImage){toast(lang==='fa'?'ابتدا تصویر ثبت کنید.':'Capture or upload an image first.');return}let record={id:id(),created:new Date().toISOString(),image:currentImage,points,calibration,areaCm2:points.length>=3&&calibration?polygonArea(points)*(calibration.cm/calibration.px)**2:null,aiStatus:'not-installed',reviewStatus:'manual-draft',boundaryClosed:traceClosed};state.images.push(record);state.assessments.push({id:id(),imageId:record.id,created:record.created,kind:'image-measurement',data:{pointCount:points.length,calibrated:!!calibration,areaCm2:record.areaCm2}});persist();toast(lang==='fa'?'ارزیابی تصویر در همین مرورگر ذخیره شد.':'Image assessment saved in this browser.');};
+function calculateTraceMetrics(){
+ if(points.length<3||!calibration||!traceClosed)return null;
+ const xs=points.map(p=>p.x),ys=points.map(p=>p.y),pxPerCm=calibration.px/calibration.cm;
+ const lengthPx=Math.max(...xs)-Math.min(...xs),widthPx=Math.max(...ys)-Math.min(...ys);
+ return {lengthCm:lengthPx/pxPerCm,widthCm:widthPx/pxPerCm,areaCm2:polygonArea(points)/(pxPerCm*pxPerCm),pxPerCm};
+}
+function updateArea(){
+ const m=calculateTraceMetrics();
+ $('#areaResult').textContent=m?`${m.areaCm2.toFixed(2)} cm²`:'— cm²';
+ $('#lengthResult').textContent=m?`${m.lengthCm.toFixed(2)} cm`:'— cm';
+ $('#widthResult').textContent=m?`${m.widthCm.toFixed(2)} cm`:'— cm';
+ const cmp=$('#measurementComparison');
+ if(cmp){
+  const wid=$('#imageWoundSelect')?.value;
+  const prev=state.images.filter(x=>x.woundId===wid&&Number.isFinite(x.areaCm2)).sort((a,b)=>b.created.localeCompare(a.created))[0];
+  if(m&&prev){
+   const delta=((m.areaCm2-prev.areaCm2)/prev.areaCm2)*100;
+   cmp.textContent=`نسبت به آخرین ارزیابی ثبت‌شده: ${delta<0?'کاهش':'افزایش'} ${Math.abs(delta).toFixed(1)}٪ مساحت (مقایسه با ${new Date(prev.created).toLocaleDateString('fa-IR')})`;
+  }else cmp.textContent='برای مقایسه روند، پس از ذخیره این ارزیابی، در مراجعه بعدی دوباره اندازه‌گیری کنید.';
+ }
+ $('#polygonStatus').textContent=points.length<3?'حداقل سه نقطه برای محاسبه لازم است.':(!traceClosed?'ابتدا حاشیه زخم را ببندید.':(calibration?'اندازه‌ها بر اساس کالیبراسیون و مرز دستی محاسبه شده‌اند.':'ترسیم ثبت شد؛ کالیبراسیون لازم است.'));
+}
+$('#measurementGridToggle')?.addEventListener('change',()=>{if(currentImage)renderCanvas()});
+$('#measurementGridStep')?.addEventListener('change',()=>{if(currentImage)renderCanvas()});
+$('#calibrateBtn').onclick=()=>{let cm=Number($('#referenceCm').value),px=Number($('#referencePx').value);if(!currentImage||!Number.isFinite(cm)||!Number.isFinite(px)||cm<=0||px<=0||px>Math.max($('#drawCanvas').width,$('#drawCanvas').height)*2){toast(lang==='fa'?'تصویر و مقادیر معتبر کالیبراسیون لازم است؛ طول واقعی و پیکسلی را بررسی کنید.':'Check the image and valid real/pixel calibration values.');return}calibration={cm,px,pxPerCm:px/cm};$('#calibrationStatus').textContent=lang==='fa'?`کالیبراسیون ثبت شد: ${(px/cm).toFixed(2)} پیکسل بر سانتی‌متر`:`Calibration set: ${(px/cm).toFixed(2)} px/cm`;updateArea()};
+function populateImagePatientSelect(){
+ const sel=$('#imagePatientSelect');if(!sel)return;
+ const previous=sel.value;
+ sel.innerHTML='<option value="">انتخاب بیمار...</option>'+state.patients.map(p=>`<option value="${esc(p.id)}">${esc(p.name)} — ${esc(p.code)}</option>`).join('');
+ if(state.patients.some(p=>p.id===previous))sel.value=previous;
+ populateImageWoundSelect();
+}
+function populateImageWoundSelect(){
+ const patientId=$('#imagePatientSelect')?.value,sel=$('#imageWoundSelect');if(!sel)return;
+ const list=state.wounds.filter(w=>w.patientId===patientId&&w.status!=='closed');
+ sel.innerHTML='<option value="">انتخاب زخم...</option>'+list.map(w=>`<option value="${esc(w.id)}">${esc(w.site||'محل نامشخص')} — ${esc(w.etiology||'اتیولوژی نامشخص')}</option>`).join('');
+ sel.disabled=!patientId||!list.length;
+ renderImageHistory();
+}
+function renderImageHistory(){
+ const box=$('#imageHistoryList');if(!box)return;
+ const wid=$('#imageWoundSelect')?.value;
+ const records=state.images.filter(x=>x.woundId===wid).sort((a,b)=>b.created.localeCompare(a.created));
+ $('#imageHistoryCount').textContent=String(records.length);
+ box.innerHTML=records.length?records.map(x=>`<article class="image-history-card"><img src="${x.thumbnail||x.image}" alt="تصویر ثبت‌شده زخم"><div><b>${new Date(x.created).toLocaleString(lang==='fa'?'fa-IR':'en-US')}</b><small>${esc(x.viewLabel||x.viewType||'تصویر')} · ${x.width||'—'}×${x.height||'—'} px</small><small>${esc(x.note||'بدون یادداشت')}</small></div></article>`).join(''):'<p class="muted">برای این زخم هنوز تصویری ثبت نشده است.</p>';
+}
+$('#imagePatientSelect')?.addEventListener('change',populateImageWoundSelect);
+$('#imageWoundSelect')?.addEventListener('change',renderImageHistory);
+function compressClinicalImage(src,maxSide=1600,quality=.82){
+ return new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{const scale=Math.min(1,maxSide/Math.max(im.naturalWidth,im.naturalHeight));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.naturalWidth*scale));c.height=Math.max(1,Math.round(im.naturalHeight*scale));c.getContext('2d',{alpha:false}).drawImage(im,0,0,c.width,c.height);resolve({data:c.toDataURL('image/jpeg',quality),width:im.naturalWidth,height:im.naturalHeight,storedWidth:c.width,storedHeight:c.height})};im.onerror=reject;im.src=src});
+}
+$('#saveImageRecord').onclick=async()=>{
+ if(!currentImage){toast(lang==='fa'?'ابتدا تصویر ثبت کنید.':'Capture or upload an image first.');return}
+ const patientId=$('#imagePatientSelect').value,woundId=$('#imageWoundSelect').value;
+ if(!patientId||!woundId){toast('برای ثبت تصویر، بیمار و زخم مرتبط را انتخاب کنید.');return}
+ const patient=state.patients.find(p=>p.id===patientId),wound=state.wounds.find(w=>w.id===woundId&&w.patientId===patientId);
+ if(!patient||!wound){toast('ارتباط بیمار و زخم معتبر نیست.');return}
+ const btn=$('#saveImageRecord');btn.disabled=true;
+ try{
+  const packed=await compressClinicalImage(currentImage);
+  const created=new Date().toISOString(),viewType=$('#imageViewType').value;
+  const labels={baseline:'تصویر پایه',followup:'تصویر پیگیری',detail:'نمای نزدیک',other:'سایر'};
+  const record={id:id(),patientId,woundId,created,image:packed.data,thumbnail:packed.data,width:packed.width,height:packed.height,storedWidth:packed.storedWidth,storedHeight:packed.storedHeight,viewType,viewLabel:labels[viewType],note:$('#imageNote').value.trim(),points:points.map(p=>({x:p.x,y:p.y})),calibration:calibration?{...calibration}:null,areaCm2:calculateTraceMetrics()?.areaCm2??null,lengthCm:calculateTraceMetrics()?.lengthCm??null,widthCm:calculateTraceMetrics()?.widthCm??null,aiStatus:'not-installed',reviewStatus:'manual-draft',boundaryClosed:traceClosed};
+  state.images.push(record);
+  state.assessments.push({id:id(),patientId,woundId,imageId:record.id,created,kind:'image-measurement',data:{pointCount:points.length,calibrated:!!calibration,areaCm2:record.areaCm2,lengthCm:record.lengthCm,widthCm:record.widthCm,imageWidth:record.width,imageHeight:record.height}});
+  if(!persist()){state.images.pop();state.assessments.pop();return}
+  renderImageHistory();$('#imageNote').value='';toast('تصویر با تاریخ و ارتباط پرونده ذخیره شد.');
+ }catch(err){console.error(err);toast('ذخیره تصویر ناموفق بود؛ حجم یا قالب عکس را بررسی کنید.')}
+ finally{btn.disabled=false}
+};
+
+
+// ===== Stage 5: trainable, transparent ANN research module =====
+const ANN_FEATURES=['area_cm2','depth_mm','pain_0_10','exudate_0_3','tissue_granulation_pct','tissue_slough_pct','infection_signs_0_5','days_since_onset'];
+function parseCSV(text){
+ const rows=[];let row=[],cell='',quoted=false;
+ for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'&&quoted&&text[i+1]==='"'){cell+='"';i++}else if(c==='"'){quoted=!quoted}else if(c===','&&!quoted){row.push(cell.trim());cell=''}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell.trim());if(row.some(v=>v!==''))rows.push(row);row=[];cell=''}else cell+=c}
+ row.push(cell.trim());if(row.some(v=>v!==''))rows.push(row);return rows;
+}
+function refreshAnnStatus(){
+ const m=state.aiModel,el=$('#annTrainingStatus'),run=$('#runAnnBtn');
+ if(!el)return;
+ if(m?.trained){el.textContent=`مدل پژوهشی آموزش‌دیده است · ${m.samples} نمونه · ${m.epochs} دوره آموزش`;run.disabled=false}
+ else{el.textContent='مدل هنوز آموزش ندیده است؛ فایل CSV برچسب‌خورده لازم است.';run.disabled=true}
+}
+function annForward(x,model){
+ const z=x.map((v,i)=>(v-model.mean[i])/model.std[i]);
+ const h=model.b1.map((b,j)=>Math.tanh(b+z.reduce((s,v,i)=>s+v*model.w1[i][j],0)));
+ const o=model.b2.map((b,k)=>b+h.reduce((s,v,j)=>s+v*model.w2[j][k],0));
+ const maxO=Math.max(...o),ex=o.map(v=>Math.exp(v-maxO)),sum=ex.reduce((a,b)=>a+b,0);return ex.map(v=>v/sum);
+}
+function trainANN(rows){
+ const data=rows.map(r=>({x:ANN_FEATURES.map(k=>Number(r[k])),y:Number(r.label)}));
+ if(data.length<20)throw Error('حداقل ۲۰ نمونه لازم است.');
+ if(data.some(d=>d.x.some(v=>!Number.isFinite(v))||![0,1].includes(d.y)))throw Error('مقادیر ویژگی‌ها باید عددی و label فقط ۰ یا ۱ باشد.');
+ const groups=[data.map((d,i)=>d.y===0?i:-1).filter(i=>i>=0),data.map((d,i)=>d.y===1?i:-1).filter(i=>i>=0)];
+ if(groups.some(g=>g.length<2))throw Error('برای هر کلاس حداقل دو نمونه لازم است تا آموزش و آزمون هر دو شامل آن باشند.');
+ const hash=i=>((i*9301+49297)%233280)/233280;
+ const train=[],test=[];
+ groups.forEach(g=>{
+  const ordered=[...g].sort((a,b)=>hash(a)-hash(b));
+  const cut=Math.min(ordered.length-1,Math.max(1,Math.floor(ordered.length*.8)));
+  train.push(...ordered.slice(0,cut));test.push(...ordered.slice(cut));
+ });
+ const mean=ANN_FEATURES.map((_,i)=>train.reduce((s,idx)=>s+data[idx].x[i],0)/train.length);
+ const std=ANN_FEATURES.map((_,i)=>Math.sqrt(train.reduce((s,idx)=>s+(data[idx].x[i]-mean[i])**2,0)/train.length)||1);
+ const norm=data.map(d=>d.x.map((v,i)=>(v-mean[i])/std[i]));
+ let seed=20261109;const rand=(a,b)=>{seed=(seed*9301+49297)%233280;return a+(b-a)*(seed/233280)};
+ const H=10,w1=ANN_FEATURES.map(()=>Array.from({length:H},()=>rand(-.15,.15))),b1=Array(H).fill(0);
+ const w2=Array.from({length:H},()=>[rand(-.15,.15),rand(-.15,.15)]),b2=[0,0];
+ const lr=.025,epochs=350;
+ for(let ep=0;ep<epochs;ep++){
+  for(const idx of train){
+   const x=norm[idx],y=data[idx].y;
+   const h=b1.map((b,j)=>Math.tanh(b+x.reduce((s,v,i)=>s+v*w1[i][j],0)));
+   const o=b2.map((b,k)=>b+h.reduce((s,v,j)=>s+v*w2[j][k],0));
+   const maxO=Math.max(...o),ex=o.map(v=>Math.exp(v-maxO)),sm=ex.reduce((a,b)=>a+b,0),p=ex.map(v=>v/sm);
+   const go=[p[0]-(y===0?1:0),p[1]-(y===1?1:0)],gh=Array(H).fill(0);
+   for(let j=0;j<H;j++)for(let k=0;k<2;k++){gh[j]+=go[k]*w2[j][k];w2[j][k]-=lr*go[k]*h[j]}
+   for(let k=0;k<2;k++)b2[k]-=lr*go[k];
+   for(let j=0;j<H;j++){const dz=gh[j]*(1-h[j]*h[j]);b1[j]-=lr*dz;for(let i=0;i<x.length;i++)w1[i][j]-=lr*dz*x[i]}
+  }
+ }
+ const model={trained:true,algorithm:'MLP-ANN',features:ANN_FEATURES,mean,std,w1,b1,w2,b2,samples:data.length,trainCount:train.length,testCount:test.length,epochs,trainedAt:new Date().toISOString(),labels:{0:'کلاس ۰',1:'کلاس ۱'},splitMethod:'stratified-80-20',normalizationFit:'training-set-only'};
+ let correct=0,tp=0,tn=0,fp=0,fn=0;
+ for(const idx of test){const p=annForward(data[idx].x,model),pred=p[1]>=p[0]?1:0,y=data[idx].y;if(pred===y)correct++;if(y===1&&pred===1)tp++;else if(y===0&&pred===0)tn++;else if(pred===1)fp++;else fn++}
+ model.accuracy=test.length?correct/test.length:null;model.confusion={tp,tn,fp,fn};
+ return model;
+}
+$('#downloadAnnTemplate')?.addEventListener('click',()=>{
+ const header=[...ANN_FEATURES,'label'].join(',');
+ const sample='10,4,3,1,60,20,1,14,0\n4,2,1,0,80,5,0,7,1\n';
+ download('WoundAI_ANN_dataset_template.csv',header+'\n'+sample,'text/csv;charset=utf-8');
+});
+$('#trainAnnBtn')?.addEventListener('click',async()=>{
+ const f=$('#annDataset').files[0];if(!f){toast('ابتدا فایل CSV را انتخاب کنید.');return}
+ const btn=$('#trainAnnBtn');btn.disabled=true;
+ try{
+  const rows=parseCSV(await f.text());const headers=rows.shift().map(x=>x.toLowerCase());
+  for(const k of [...ANN_FEATURES,'label'])if(!headers.includes(k))throw Error('ستون الزامی پیدا نشد: '+k);
+  const objects=rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])));
+  const model=trainANN(objects),previousModel=state.aiModel;state.aiModel=model;
+  if(!persist()){state.aiModel=previousModel;throw Error('ذخیره مدل در مرورگر ناموفق بود.')}
+  $('#annMetrics').innerHTML=`<div><b>${model.samples}</b><small>نمونه</small></div><div><b>${model.trainCount}</b><small>نمونه آموزش</small></div><div><b>${model.testCount}</b><small>نمونه آزمون</small></div><div><b>${model.accuracy===null?'—':(model.accuracy*100).toFixed(1)+'٪'}</b><small>دقت روی بخش آزمون</small></div><div><b>${model.confusion.tp}/${model.confusion.tn}/${model.confusion.fp}/${model.confusion.fn}</b><small>TP/TN/FP/FN</small></div>`;
+  $('#annTrainingStatus').textContent='آموزش انجام شد. مدل فقط پژوهشی است و نیازمند اعتبارسنجی مستقل است.';
+  $('#runAnnBtn').disabled=false;toast('آموزش ANN انجام شد.');
+ }catch(e){toast(e.message||'آموزش مدل ناموفق بود.')}
+ finally{btn.disabled=false}
+});
+$('#fillAnnFromClinical')?.addEventListener('click',()=>{
+ fillAnnFromClinical();
+ goto('ai');
+ toast('ویژگی‌های موجود از ارزیابی بالینی به فرم پژوهشی ANN منتقل شدند؛ مقادیر خالی را تکمیل کنید.');
+});
+$('#runAnnBtn')?.addEventListener('click',()=>{
+ const m=state.aiModel;if(!m?.trained){toast('ابتدا مدل را آموزش دهید.');return}
+ const ids=['annArea','annDepth','annPain','annExudate','annGranulation','annSlough','annInfection','annDays'];
+ const x=ids.map(id=>Number($('#'+id).value));
+ if(ids.some(id=>$('#'+id).value==='')||x.some(v=>!Number.isFinite(v)||v<0)){toast('تمام ویژگی‌ها را با مقادیر معتبر تکمیل کنید.');return}
+ if(x[4]+x[5]>100){toast('مجموع درصد گرانولاسیون و اسلاف نباید بیش از ۱۰۰ باشد.');return}
+ const p=annForward(x,m),klass=p[1]>=p[0]?1:0;
+ $('#annPrediction').innerHTML=`<b>خروجی مدل پژوهشی: ${klass===1?'کلاس ۱':'کلاس ۰'}</b><p>احتمال محاسباتی کلاس ۰: ${(p[0]*100).toFixed(1)}٪</p><p>احتمال محاسباتی کلاس ۱: ${(p[1]*100).toFixed(1)}٪</p><small>این اعداد احتمال کالیبره‌شده بالینی نیستند و نباید برای تشخیص، انتخاب پانسمان یا تصمیم درمانی استفاده شوند. معنای کلاس‌ها تابع برچسب‌های دیتاست آموزشی است.</small>`;
+ const wid=$('#assessmentWound')?.value||selectedWoundId;
+ if(wid){
+  const record={id:id(),woundId:wid,created:new Date().toISOString(),kind:'ann-research-prediction',data:{class:klass,probabilities:p,features:x,modelTrainedAt:m.trainedAt,disclaimer:'Research-only output; not a diagnosis or treatment recommendation.'}};
+  state.assessments.push(record);
+  if(!persist()){state.assessments.pop();toast('پیش‌بینی نمایش داده شد اما ذخیره آن ناموفق بود.');}
+  else toast('خروجی پژوهشی ANN در تاریخچه زخم ذخیره شد.');
+ }else toast('پیش‌بینی فقط نمایش داده شد؛ برای اتصال به پرونده، ابتدا زخم را در ارزیابی بالینی انتخاب کنید.');
+});
+refreshAnnStatus();
 $('#exportBackup').onclick=()=>download(`WoundAI-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'WoundAI',version:'2.0',exportedAt:new Date().toISOString(),...state},null,2),'application/json');
 $('#importBackup').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!Array.isArray(x.patients)||!Array.isArray(x.wounds))throw Error('invalid');for(let k of ['patients','wounds','assessments','images'])if(Array.isArray(x[k]))state[k]=[...state[k],...x[k]];persist();renderPatients();toast(lang==='fa'?'بازیابی انجام شد؛ موارد تکراری را بررسی کنید.':'Restore completed. Check for duplicates.')}catch(err){toast(lang==='fa'?'فایل پشتیبان معتبر نیست.':'Invalid backup file.')}e.target.value=''};
 function download(name,content,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
@@ -68,23 +271,130 @@ if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serv
 Object.assign(tr.fa,{clinical:'ارزیابی بالینی',clinicalTitle:'ارزیابی بالینی زخم',clinicalDesc:'اطلاعات مشاهده‌شده و گزارش‌شده را جداگانه ثبت کنید؛ طبقه‌بندی فقط با داده کافی انجام می‌شود.',patientWound:'بیمار / زخم',assessor:'نام ارزیاب',etiology:'اتیولوژی زخم',pain:'درد (۰ تا ۱۰)',temperature:'دما (°C)',heartRate:'ضربان قلب (در دقیقه)',length:'طول (cm)',width:'عرض (cm)',depth:'عمق (mm) — روش بالینی',depthMethod:'روش ثبت عمق',exudate:'مقدار ترشح',exudateType:'نوع ترشح',tissuePercent:'درصد اجزای بستر زخم (جمع حداکثر ۱۰۰٪)',localSigns:'نشانه‌های موضعی عفونت / التهاب',infectionSeverity:'شدت عفونت (ارزیابی بالینی)',npiapStage:'مرحله آسیب فشاری (در صورت کاربرد)',timeFramework:'چارچوب TIME / TIMERS — یادداشت ساختاریافته',clinicalNotes:'یادداشت ارزیاب / آزمایش‌ها / درمان‌های انجام‌شده',followupDate:'تاریخ پیگیری پیشنهادی',sinbadSite:'SINBAD — محل (Site)'});
 Object.assign(tr.en,{clinical:'Clinical assessment',clinicalTitle:'Wound clinical assessment',clinicalDesc:'Record observed and patient-reported findings separately. Classifications require complete inputs.',patientWound:'Patient / wound',assessor:'Assessor name',etiology:'Wound etiology',pain:'Pain (0–10)',temperature:'Temperature (°C)',heartRate:'Heart rate (bpm)',length:'Length (cm)',width:'Width (cm)',depth:'Depth (mm) — clinical method',depthMethod:'Depth assessment method',exudate:'Exudate amount',exudateType:'Exudate type',tissuePercent:'Wound bed tissue percentages (total ≤100%)',localSigns:'Local infection / inflammation signs',infectionSeverity:'Infection severity (clinical assessment)',npiapStage:'Pressure injury stage (if applicable)',timeFramework:'TIME / TIMERS structured notes',clinicalNotes:'Assessor notes / labs / interventions',followupDate:'Suggested follow-up date',sinbadSite:'SINBAD — Site'});
 let selectedWoundId=null;
+
+// Stage 6 integration: pull the latest saved image measurement into the selected wound assessment.
+function latestImageForWound(woundId){
+ return state.images.filter(x=>x.woundId===woundId).sort((a,b)=>String(b.created).localeCompare(String(a.created)))[0]||null;
+}
+function syncMeasurementToClinical(woundId){
+ const rec=latestImageForWound(woundId);
+ if(!rec){const note=$('#measurementLinkStatus');if(note)note.textContent='برای این زخم هنوز تصویر اندازه‌گیری‌شده‌ای ثبت نشده است.';return false;}
+ const setFromMeasurement=(id,value)=>{const el=$('#'+id);if(el&&value!==null&&value!==undefined&&Number.isFinite(Number(value)))el.value=String(value)};
+ setFromMeasurement('aLength',rec.lengthCm);setFromMeasurement('aWidth',rec.widthCm);
+ const depth=state.assessments.filter(a=>a.woundId===woundId&&a.kind==='clinical-assessment').sort((a,b)=>String(b.created).localeCompare(String(a.created)))[0]?.data?.depthMm;
+ setFromMeasurement('aDepth',depth);
+ const note=$('#measurementLinkStatus');
+ if(note)note.textContent=`آخرین اندازه‌گیری تصویری: ${new Date(rec.created).toLocaleString('fa-IR')} · مساحت ${rec.areaCm2??'—'} cm² · طول ${rec.lengthCm??'—'} cm · عرض ${rec.widthCm??'—'} cm${rec.calibration?' · کالیبره‌شده':' · بدون کالیبراسیون'}`;
+ return true;
+}
+function fillAnnFromClinical(){
+ const map={annDepth:'aDepth',annPain:'aPain',annGranulation:'tGran',annSlough:'tSlough'};
+ Object.entries(map).forEach(([to,from])=>{const src=$('#'+from),dst=$('#'+to);if(src&&dst&&src.value!=='')dst.value=src.value});
+ const wid=$('#assessmentWound')?.value,latest=wid?latestImageForWound(wid):null;
+ const areaField=$('#annArea');
+ if(areaField&&latest?.areaCm2!==null&&latest?.areaCm2!==undefined)areaField.value=String(latest.areaCm2);
+ const link=$('#annLinkStatus');if(link)link.textContent=latest?`اطلاعات زخم انتخاب‌شده منتقل شد؛ مساحت فقط در صورت اندازه‌گیری و کالیبراسیون معتبر استفاده می‌شود. شناسه تصویر: ${latest.id}`:'ویژگی‌های بالینی موجود منتقل شدند؛ برای مساحت واقعی، تصویر کالیبره‌شده لازم است.';
+ const ex={'none':0,'low':1,'moderate':2,'high':3};
+ const e=$('#aExudate'),exEl=$('#annExudate');
+ const exMap={'none':0,'low':1,'moderate':2,'high':3};
+ if(e&&exEl&&Object.prototype.hasOwnProperty.call(exMap,e.value))exEl.value=String(exMap[e.value]);
+ const signs=['sRed','sWarm','sSwelling','sPain','sPus','sOdor'].filter(id=>$('#'+id)?.checked).length;
+ if($('#annInfection'))$('#annInfection').value=String(Math.min(5,signs));
+ const w=state.wounds.find(x=>x.id===wid);
+ const days=w?.onset?Math.max(0,Math.floor((Date.now()-new Date(w.onset).getTime())/86400000)):0;
+ if($('#annDays'))$('#annDays').value=String(days);
+}
+function currentAnnPredictionForWound(woundId){
+ return state.assessments.filter(a=>a.woundId===woundId&&a.kind==='ann-research-prediction').sort((a,b)=>String(b.created).localeCompare(String(a.created)))[0]||null;
+}
 function refreshAssessmentWounds(){let sel=$('#assessmentWound');if(!sel)return;let opts=state.wounds.map(w=>{let p=state.patients.find(x=>x.id===w.patientId);return `<option value="${w.id}">${esc(p?.name||'')} — ${esc(w.etiology)} — ${esc(w.site)}</option>`}).join('');sel.innerHTML=opts||`<option value="">${lang==='fa'?'ابتدا بیمار و زخم ثبت کنید':'Register a patient and wound first'}</option>`;if(selectedWoundId&&state.wounds.some(w=>w.id===selectedWoundId))sel.value=selectedWoundId;else selectedWoundId=sel.value||null;}
-const oldGoto=goto;goto=function(page){oldGoto(page);if(page==='clinical')refreshAssessmentWounds()};
-$('#assessmentWound')?.addEventListener('change',e=>selectedWoundId=e.target.value);
+
+// ===== Stage 7: structured care plan, clinician review and audit trail =====
+let stage7Current=null;
+function stage7PopulatePatients(){
+ const psel=$('#stage7Patient'),wsel=$('#stage7Wound');if(!psel||!wsel)return;
+ const prev=psel.value;
+ psel.innerHTML='<option value="">انتخاب بیمار</option>'+state.patients.filter(p=>p.status!=='archived').map(p=>`<option value="${esc(p.id)}">${esc(p.name)} — ${esc(p.code||'')}</option>`).join('');
+ if(state.patients.some(p=>p.id===prev))psel.value=prev;
+ stage7PopulateWounds();
+}
+function stage7PopulateWounds(){
+ const pid=$('#stage7Patient')?.value,wsel=$('#stage7Wound');if(!wsel)return;
+ const list=state.wounds.filter(w=>w.patientId===pid);
+ wsel.innerHTML='<option value="">انتخاب زخم</option>'+list.map(w=>`<option value="${esc(w.id)}">${esc(w.site||'محل نامشخص')} — ${esc(w.etiology||'اتیولوژی نامشخص')}</option>`).join('');
+ wsel.disabled=!pid||!list.length;
+ stage7Current=null;
+ $('#stage7Output').innerHTML='<div class="panel stage7-empty">برای مشاهده برنامه، یک زخم انتخاب کنید و «تولید برنامه» را بزنید.</div>';
+ $('#stage7SourceStatus').textContent=list.length?'زخم را انتخاب کنید.':'برای این بیمار هنوز زخمی ثبت نشده است.';
+ stage7RenderHistory();
+}
+function stage7LatestAssessment(wid){
+ return state.assessments.filter(a=>a.woundId===wid&&a.kind==='clinical-assessment').sort((a,b)=>String(b.created).localeCompare(String(a.created)))[0]||null;
+}
+function stage7RenderHistory(){
+ const box=$('#stage7History');if(!box)return;
+ const wid=$('#stage7Wound')?.value;
+ const records=state.assessments.filter(a=>a.woundId===wid&&a.kind==='care-plan-stage7').sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+ box.innerHTML=records.length?records.map(r=>`<article class="stage7-history-item"><div><b>${esc(r.data?.status==='approved'?'تأییدشده توسط متخصص':'پیش‌نویس')}</b><small>${new Date(r.created).toLocaleString('fa-IR')} · ${esc(r.data?.clinician||'بدون نام تأییدکننده')}</small></div><span>${esc(r.data?.urgency||'')}</span></article>`).join(''):'<p class="muted">برای این زخم هنوز برنامه مراقبتی ذخیره نشده است.</p>';
+}
+function stage7Generate(){
+ const wid=$('#stage7Wound')?.value;if(!wid){toast('ابتدا بیمار و زخم را انتخاب کنید.');return}
+ const wound=state.wounds.find(w=>w.id===wid),patient=state.patients.find(p=>p.id===wound?.patientId);
+ const assessment=stage7LatestAssessment(wid);
+ if(!assessment){stage7Current=null;$('#stage7Output').innerHTML='<div class="panel stage7-empty">برای این زخم هنوز ارزیابی بالینی ذخیره‌شده وجود ندارد. ابتدا ارزیابی بالینی را تکمیل و ذخیره کنید.</div>';$('#stage7SourceStatus').textContent='ارزیابی بالینی ذخیره‌شده پیدا نشد.';return}
+ const d=assessment.data||{},draft=d.carePlanDraft||{};
+ const items=Array.isArray(draft.items)?draft.items:[];
+ const domains=Array.isArray(draft.clinicalDomains)?draft.clinicalDomains:[];
+ if(!items.length&&!domains.length){$('#stage7Output').innerHTML='<div class="panel stage7-empty">ارزیابی ذخیره شده، اما پیش‌نویس برنامه مراقبتی یا محورهای تخصصی در آن وجود ندارد. ارزیابی بالینی را دوباره تولید و ذخیره کنید.</div>';$('#stage7SourceStatus').textContent='داده کافی برای ساخت برنامه وجود ندارد.';stage7Current=null;return}
+ const image=d.imageMeasurement||null,ann=d.annResearch||null;
+ const patientSummary=[
+  ['بیمار',patient?.name||'نامشخص'],['شناسه پرونده',patient?.code||'—'],
+  ['محل زخم',wound?.site||'—'],['اتیولوژی',d.etiology||wound?.etiology||'—'],
+  ['درد',d.pain!==''&&d.pain!==undefined?d.pain+'/10':'ثبت نشده'],
+  ['ابعاد زخم',image?`مساحت ${image.areaCm2??'—'} cm² · طول ${image.lengthCm??'—'} cm · عرض ${image.widthCm??'—'} cm`:'اندازه‌گیری تصویری متصل نیست'],
+  ['ANN',ann?'خروجی پژوهشی موجود است؛ به‌تنهایی مبنای تصمیم درمانی نیست.':'پیش‌بینی ANN برای این ارزیابی ثبت نشده']
+ ];
+ const summaryHtml=patientSummary.map(([k,v])=>`<div class="stage7-summary-cell"><small>${esc(k)}</small><b>${esc(v)}</b></div>`).join('');
+ const domainsHtml=domains.map(x=>`<article class="clinical-domain"><b>${esc(x.title||'محور تخصصی')}</b><p>${esc(x.summary||'')}</p></article>`).join('');
+ const safeItems=items.map(x=>String(x));
+ stage7Current={patientId:wound.patientId,woundId:wid,assessmentId:assessment.id,assessmentCreated:assessment.created,urgency:draft.urgency||'نیازمند بازبینی متخصص',items:safeItems,domains,patientSummary,gradeSummary:draft.gradeSummary||'',riskFlags:draft.riskFlags||[],dressingConsiderations:draft.dressingConsiderations||'',generatedAt:new Date().toISOString()};
+ $('#stage7Output').innerHTML=`<section class="panel"><div class="stage7-plan-head"><div><small>خلاصه وضعیت بر اساس آخرین ارزیابی ذخیره‌شده</small><h3>${esc(patient?.name||'بیمار')} — ${esc(wound?.site||'زخم')}</h3></div><span class="stage7-urgency">${esc(stage7Current.urgency)}</span></div><div class="stage7-summary-grid">${summaryHtml}</div></section><section class="panel"><h3>اولویت‌ها و هشدارها</h3><ol class="stage7-list">${(stage7Current.riskFlags.length?stage7Current.riskFlags:['هشدار مشخصی در پیش‌نویس ثبت نشده؛ نبود هشدار ثبت‌شده به معنی نبود خطر نیست.']).map(x=>`<li>${esc(x)}</li>`).join('')}</ol></section><section class="panel"><h3>ارزیابی هفت‌محوری</h3><div class="clinical-seven-grid">${domainsHtml||'<p>محورهای تخصصی در ارزیابی منبع ثبت نشده‌اند.</p>'}</div></section><section class="panel"><h3>پیشنهاد اقدامات مراقبتی</h3><ol class="stage7-list">${safeItems.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="micro-note">این موارد پیش‌نویس پشتیبان تصمیم هستند؛ انتخاب و اجرای اقدام به بررسی و تأیید درمانگر وابسته است.</p></section>`;
+ $('#stage7SourceStatus').textContent=`منبع: ارزیابی ${new Date(assessment.created).toLocaleString('fa-IR')} · ${items.length} اقدام پیشنهادی · ${domains.length} محور تخصصی`;
+ $('#stage7Edits').value='';$('#stage7Approval').checked=false;stage7RenderHistory();
+}
+function stage7Save(status){
+ if(!stage7Current){toast('ابتدا برنامه را از آخرین ارزیابی تولید کنید.');return}
+ const clinician=$('#stage7Clinician').value.trim(),credential=$('#stage7Credential').value.trim(),edits=$('#stage7Edits').value.trim();
+ if(status==='approved'&&(!clinician||!$('#stage7Approval').checked)){toast('برای تأیید نهایی، نام متخصص و پذیرش مسئولیت تأیید الزامی است.');return}
+ const record={id:id(),patientId:stage7Current.patientId,woundId:stage7Current.woundId,created:new Date().toISOString(),kind:'care-plan-stage7',data:{...stage7Current,status,clinician,credential,clinicianEdits:edits,reviewedAt:status==='approved'?new Date().toISOString():null,disclaimer:'Clinical decision support draft; not a diagnosis or prescription. Clinician review required.'}};
+ state.assessments.push(record);
+ if(!persist()){state.assessments.pop();return}
+ $('#stage7SaveStatus').textContent=status==='approved'?'برنامه با نام متخصص و وضعیت تأییدشده در پرونده ثبت شد.':'پیش‌نویس برنامه در پرونده ذخیره شد.';
+ toast(status==='approved'?'تأیید متخصص ثبت شد.':'پیش‌نویس ذخیره شد.');
+ stage7RenderHistory();
+}
+$('#stage7Patient')?.addEventListener('change',stage7PopulateWounds);
+$('#stage7Wound')?.addEventListener('change',()=>{stage7Current=null;stage7RenderHistory();$('#stage7SourceStatus').textContent='برای تولید برنامه، دکمه تولید را بزنید.'});
+$('#stage7Generate')?.addEventListener('click',stage7Generate);
+$('#stage7SaveDraft')?.addEventListener('click',()=>stage7Save('draft'));
+$('#stage7Approve')?.addEventListener('click',()=>stage7Save('approved'));
+
+const oldGoto=goto;goto=function(page){oldGoto(page);if(page==='careplan'){stage7PopulatePatients()}if(page==='reports'){fillReportPatients()}if(page==='security'){stage9Identity()}if(page==='finaltest'){$('#pwaInstallStatus').textContent=('serviceWorker' in navigator)?'Service Worker API در دسترس است.':'Service Worker در این مرورگر پشتیبانی نمی‌شود.'}if(page==='clinical'){refreshAssessmentWounds();syncMeasurementToClinical($('#assessmentWound')?.value)}if(page==='ai'){refreshAssessmentWounds();fillAnnFromClinical()}};
+$('#assessmentWound')?.addEventListener('change',e=>{selectedWoundId=e.target.value;syncMeasurementToClinical(selectedWoundId);fillAnnFromClinical()});
 function sinbadCalc(){let ids=['sinSite','sinIsch','sinNeuro','sinInfect','sinArea','sinDepth'];let vals=ids.map(x=>$( '#'+x).value);let box=$('#sinbadResult');if(vals.some(v=>v==='')){box.textContent=lang==='fa'?'SINBAD: قابل محاسبه نیست — همه ۶ مؤلفه باید تکمیل شوند.':'SINBAD: Not calculable — all 6 components are required.';return null}let score=vals.reduce((a,v)=>a+Number(v),0);box.textContent=lang==='fa'?`SINBAD پیشنهادی بر اساس ورودی ارزیاب: ${score} از ۶ · مؤلفه‌ها: ${vals.join(' / ')} · نیازمند بازبینی متخصص`:`Clinician-entered SINBAD total: ${score}/6 · components: ${vals.join(' / ')} · clinician review required`;return {score,components:vals.map(Number),version:'SINBAD fields per project specification; verify against current licensed source'};}
 ['sinSite','sinIsch','sinNeuro','sinInfect','sinArea','sinDepth'].forEach(x=>$('#'+x)?.addEventListener('change',sinbadCalc));
 ['tGran','tSlough','tNecrosis','tEpi'].forEach(x=>$('#'+x)?.addEventListener('input',()=>{let n=['tGran','tSlough','tNecrosis','tEpi'].reduce((a,k)=>a+(Number($('#'+k).value)||0),0);$('#tissueTotal').textContent=(lang==='fa'?`مجموع: ${n}٪`:`Total: ${n}%`)+(n>100?(lang==='fa'?' — بیشتر از ۱۰۰٪؛ اصلاح کنید':' — over 100%; please correct'):'')}));
-$('#saveClinical')?.addEventListener('click',()=>{let wid=$('#assessmentWound').value;if(!wid){toast(lang==='fa'?'ابتدا برای بیمار یک زخم ثبت کنید.':'Register a wound first.');return}let tissue=['tGran','tSlough','tNecrosis','tEpi'].map(k=>Number($('#'+k).value)||0),total=tissue.reduce((a,b)=>a+b,0);if(total>100){toast(lang==='fa'?'مجموع درصد بافت نباید بیشتر از ۱۰۰ باشد.':'Tissue percentages must not exceed 100%.');return}let sinbad=sinbadCalc();let computedScores=computeClinicalScores();let data={computedScores,assessor:$('#assessorName').value,etiology:$('#aEtiology').value,pain:$('#aPain').value,temperature:$('#aTemp').value,heartRate:$('#aHR').value,bloodPressure:$('#aBP')?.value||'',respiratoryRate:$('#aRR')?.value||'',spo2:$('#aSpO2')?.value||'',probeToBone:$('#aPTB')?.value||'',labs:$('#aLabs')?.value||'',culture:$('#aCulture')?.value||'',interventions:$('#aTreatment')?.value||'',lengthCm:$('#aLength').value,widthCm:$('#aWidth').value,depthMm:$('#aDepth').value,depthMethod:$('#aDepthMethod').value,exudate:$('#aExudate').value,exudateType:$('#aExudateType').value,tissue:{granulation:tissue[0],slough:tissue[1],necrosis:tissue[2],epithelial:tissue[3]},localSigns:{redness:$('#sRed').checked,warmth:$('#sWarm').checked,swelling:$('#sSwelling').checked,newPain:$('#sPain').checked,pus:$('#sPus').checked,odor:$('#sOdor').checked},infectionSeverity:$('#aInfection').value,npiapStage:$('#aNpiap').value,wagner:$('#aWagner').value,universityOfTexas:{grade:$('#aUTGrade').value,stage:$('#aUTStage').value},wifi:{wound:$('#wWound').value,ischemia:$('#wIschemia').value,infection:$('#wInfection').value,stage:'not-calculated'},time:{tissue:$('#timeT').value,infection:$('#timeI').value,moisture:$('#timeM').value,edge:$('#timeE').value},notes:$('#aNotes').value,followup:$('#aFollowup').value,sinbad,push:{area:$('#pushArea')?.value||'',exudate:$('#pushExudate')?.value||'',tissue:$('#pushTissue')?.value||''},bwat:Object.fromEntries(Array.from({length:13},(_,i)=>['item'+(i+1),$('#bwat'+(i+1))?.value||'']))};state.assessments.push({id:id(),woundId:wid,created:new Date().toISOString(),kind:'clinical-assessment',data});let w=state.wounds.find(x=>x.id===wid);if(w&&data.followup)w.followup=data.followup;persist();toast(lang==='fa'?'ارزیابی بالینی ذخیره شد.':'Clinical assessment saved.');});
+$('#saveClinical')?.addEventListener('click',()=>{let wid=$('#assessmentWound').value;if(!wid){toast(lang==='fa'?'ابتدا برای بیمار یک زخم ثبت کنید.':'Register a wound first.');return}let tissue=['tGran','tSlough','tNecrosis','tEpi'].map(k=>Number($('#'+k).value)||0),total=tissue.reduce((a,b)=>a+b,0);if(total>100){toast(lang==='fa'?'مجموع درصد بافت نباید بیشتر از ۱۰۰ باشد.':'Tissue percentages must not exceed 100%.');return}let sinbad=sinbadCalc();let computedScores=computeClinicalScores();buildCarePlan();const latestImage=latestImageForWound(wid);const annRecord=currentAnnPredictionForWound(wid);let data={computedScores,imageMeasurement:latestImage?{imageId:latestImage.id,patientId:latestImage.patientId,woundId:latestImage.woundId,created:latestImage.created,areaCm2:latestImage.areaCm2,lengthCm:latestImage.lengthCm,widthCm:latestImage.widthCm,calibrated:!!latestImage.calibration,calibration:latestImage.calibration||null}:null,annResearch:annRecord?{...annRecord.data,predictionId:annRecord.id,predictedAt:annRecord.created}:null,clinicalDomains:latestCarePlanDraft?.clinicalDomains||[],carePlanDraft:latestCarePlanDraft?{...latestCarePlanDraft,reviewed:!!$('#planReviewed')?.checked,clinicianEdits:$('#planEdits')?.value||''}:null,assessor:$('#assessorName').value,etiology:$('#aEtiology').value,pain:$('#aPain').value,temperature:$('#aTemp').value,heartRate:$('#aHR').value,bloodPressure:$('#aBP')?.value||'',respiratoryRate:$('#aRR')?.value||'',spo2:$('#aSpO2')?.value||'',probeToBone:$('#aPTB')?.value||'',labs:$('#aLabs')?.value||'',culture:$('#aCulture')?.value||'',interventions:$('#aTreatment')?.value||'',lengthCm:$('#aLength').value,widthCm:$('#aWidth').value,depthMm:$('#aDepth').value,depthMethod:$('#aDepthMethod').value,exudate:$('#aExudate').value,exudateType:$('#aExudateType').value,tissue:{granulation:tissue[0],slough:tissue[1],necrosis:tissue[2],epithelial:tissue[3]},localSigns:{redness:$('#sRed').checked,warmth:$('#sWarm').checked,swelling:$('#sSwelling').checked,newPain:$('#sPain').checked,pus:$('#sPus').checked,odor:$('#sOdor').checked},infectionSeverity:$('#aInfection').value,npiapStage:$('#aNpiap').value,wagner:$('#aWagner').value,universityOfTexas:{grade:$('#aUTGrade').value,stage:$('#aUTStage').value},wifi:{wound:$('#wWound').value,ischemia:$('#wIschemia').value,infection:$('#wInfection').value,stage:'not-calculated'},time:{tissue:$('#timeT').value,infection:$('#timeI').value,moisture:$('#timeM').value,edge:$('#timeE').value},notes:$('#aNotes').value,followup:$('#aFollowup').value,sinbad,push:{area:$('#pushArea')?.value||'',exudate:$('#pushExudate')?.value||'',tissue:$('#pushTissue')?.value||''},bwat:Object.fromEntries(Array.from({length:13},(_,i)=>['item'+(i+1),$('#bwat'+(i+1))?.value||'']))};const selectedWound=state.wounds.find(x=>x.id===wid);const savedAssessment={id:id(),patientId:selectedWound?.patientId||null,woundId:wid,created:new Date().toISOString(),kind:'clinical-assessment',data};state.assessments.push(savedAssessment);let w=state.wounds.find(x=>x.id===wid);const previousFollowup=w?.followup;if(w&&data.followup)w.followup=data.followup;if(!persist()){state.assessments.pop();if(w)w.followup=previousFollowup;return}toast(lang==='fa'?'ارزیابی بالینی و هفت محور تخصصی ذخیره شد.':'Clinical assessment and seven domains saved.');});
 const oldAddWound=addWound;addWound=function(patientId){oldAddWound(patientId);refreshAssessmentWounds()};
 const oldRenderPatients=renderPatients;renderPatients=function(){oldRenderPatients();refreshAssessmentWounds()};
 const oldApplyLang=applyLang;applyLang=function(){oldApplyLang();if($('#assessmentWound'))refreshAssessmentWounds()};
-$('#saveImageRecord').addEventListener('click',()=>{if(state.wounds.length===0){toast(lang==='fa'?'برای اتصال تصویر، ابتدا بیمار و زخم ایجاد کنید.':'Create a patient and wound before saving an image record.');return}let w=state.wounds.find(x=>x.id===selectedWoundId)||state.wounds[0];let last=state.images[state.images.length-1];if(last)last.woundId=w.id;persist()});
+// Removed legacy image reassignment handler: saved image ownership must never be changed implicitly.
 // Additional etiology-specific classification inputs are recorded independently; composite WIfI stage is intentionally not inferred here.
 // Structured wound registration dialog (replaces browser prompt workflow).
 function addWound(patientId){$('#wPatientId').value=patientId;$('#woundModalBackdrop').hidden=false;$('#wSite').focus()}
 function closeWoundModal(){$('#woundModalBackdrop').hidden=true;$('#woundForm').reset()}
 $('#closeWoundModal').onclick=closeWoundModal;$('#cancelWound').onclick=closeWoundModal;$('#woundModalBackdrop').addEventListener('click',e=>{if(e.target.id==='woundModalBackdrop')closeWoundModal()});
-$('#woundForm').onsubmit=e=>{e.preventDefault();let patientId=$('#wPatientId').value,site=$('#wSite').value.trim();if(!patientId||!site)return;state.wounds.push({id:id(),patientId,etiology:$('#wEtiology').value,site:site+' ('+$('#wSide').value+')',side:$('#wSide').value,onset:$('#wOnset').value,notes:$('#wNotes').value,status:'active',created:new Date().toISOString(),followup:''});persist();closeWoundModal();renderPatients();refreshAssessmentWounds();toast(lang==='fa'?'زخم جدید ذخیره شد.':'New wound saved.')};
+$('#woundForm').onsubmit=e=>{e.preventDefault();let patientId=$('#wPatientId').value,site=$('#wSite').value.trim();if(!patientId||!site)return;const patient=state.patients.find(p=>p.id===patientId);if(!patient){toast('بیمار مرتبط با این زخم پیدا نشد.');return}const wound={id:id(),patientId,etiology:$('#wEtiology').value,site:site+' ('+$('#wSide').value+')',side:$('#wSide').value,onset:$('#wOnset').value,notes:$('#wNotes').value,status:'active',created:new Date().toISOString(),followup:''};state.wounds.push(wound);if(!persist()){state.wounds.pop();return}closeWoundModal();renderPatients();refreshAssessmentWounds();populateImagePatientSelect();toast(lang==='fa'?'زخم جدید ذخیره شد.':'New wound saved.')};
 const optionEn={'دیابتی':'Diabetic foot','فشاری':'Pressure injury','وریدی':'Venous','شریانی':'Arterial','جراحی':'Surgical','تروماتیک':'Traumatic','سوختگی':'Burn','مختلط':'Mixed','نامشخص':'Unknown','بدون':'None','کم':'Low','متوسط':'Moderate','زیاد':'High','سروزی':'Serous','خونی':'Bloody','چرکی':'Purulent','مختلط':'Mixed','کاربرد ندارد / نامشخص':'N/A / Unknown','غیرعفونی':'Uninfected','خفیف':'Mild','شدید':'Severe','انتخاب نشده':'Not selected','Forefoot':'Forefoot','Midfoot / hindfoot':'Midfoot / hindfoot','نامشخص / کاربرد ندارد':'Unknown / N/A','راست':'Right','چپ':'Left','دوطرفه':'Bilateral','A — بدون عفونت/ایسکمی':'A — no infection/ischemia','B — عفونت':'B — infection','C — ایسکمی':'C — ischemia','D — عفونت و ایسکمی':'D — infection and ischemia','پای دیابتی':'Diabetic foot'};
 const langApplyBase=applyLang;applyLang=function(){langApplyBase();$$('select option').forEach(o=>{if(!o.dataset.fa)o.dataset.fa=o.textContent;o.textContent=lang==='fa'?o.dataset.fa:(optionEn[o.dataset.fa]||o.dataset.fa)});};
 
@@ -121,6 +431,7 @@ function computeClinicalScores(){
  out.innerHTML=rows.map(([a,b,c])=>`<article class="score-row"><b>${a}</b><strong>${b}</strong><small>${c}</small></article>`).join('');
  return rows;
 }
+let latestCarePlanDraft=null;
 function buildCarePlan(){
  const get=id=>$('#'+id)?.value??'', checked=id=>!!$('#'+id)?.checked;
  const temp=Number(get('aTemp')), hr=Number(get('aHR')), pain=Number(get('aPain'));
@@ -128,7 +439,7 @@ function buildCarePlan(){
  const tissue=[Number(get('tGran'))||0,Number(get('tSlough'))||0,Number(get('tNecrosis'))||0,Number(get('tEpi'))||0];
  const plan=[];
  let urgency='روال ارزیابی'; let urgent=false;
- if(infection==='severe'||(temp>=39&&temp<50)||hr>=120||(checked('sPus')&&signs>=3)||(get('aBP').match(/^\\s*\\d{2,3}\\s*\\/\\s*\\d{2,3}\\s*$/)&&Number(get('aBP').split('/')[0])<90)||(get('aRR')!==''&&Number(get('aRR'))>=30)||(get('aSpO2')!==''&&Number(get('aSpO2'))<90)||(get('aTemp')!==''&&temp<35.5)){
+ if(infection==='severe'||(temp>=39&&temp<50)||hr>=120||(checked('sPus')&&signs>=3)||(get('aBP').trim().split('/').length===2&&Number(get('aBP').trim().split('/')[0])>0&&Number(get('aBP').trim().split('/')[0])<90)||(get('aRR')!==''&&Number(get('aRR'))>=30)||(get('aSpO2')!==''&&Number(get('aSpO2'))<90)||(get('aTemp')!==''&&temp<35.5)){
    urgency='نیازمند ارزیابی فوری حضوری'; urgent=true;
    plan.push('ارزیابی فوری توسط پزشک/تیم زخم؛ در صورت بدحالی عمومی، تب، گیجی، افت فشار یا گسترش سریع قرمزی، مراجعه اورژانسی لازم است.');
  } else if(infection==='moderate'||signs>=2){urgency='ارزیابی زودهنگام توسط درمانگر';plan.push('بازبینی زودهنگام علائم عفونت/التهاب، گسترش اریتم، گرمی، تورم، درد و ترشح؛ شدت عفونت فقط با معاینه و معیارهای بالینی تعیین شود.');}
@@ -193,13 +504,16 @@ function buildCarePlan(){
  plan.push('مرور خطرها: '+riskFlags.join(' '));
  if(grades.length)plan.push('طبقه‌بندی‌های ثبت‌شده توسط ارزیاب: '+grades.join('؛ ')+'.');
 
+ latestCarePlanDraft={urgency,items:[...plan],clinicalDomains:domains.map(([title,summary])=>({title,summary})),gradeSummary,riskFlags:[...riskFlags],dressingConsiderations:dressing,generatedAt:new Date().toISOString(),reviewed:false,clinicianEdits:''};
  const title=`پیش‌نویس پلن مراقبت — ${urgency}`;
  const box=$('#carePlanOutput');
  box.innerHTML=`<div class="plan-banner ${urgent?'urgent':''}"><b>${title}</b><small>پیشنهاد پشتیبان تصمیم؛ نه دستور درمان یا نسخه</small></div><ol>${plan.map(x=>`<li>${x}</li>`).join('')}</ol><label class="plan-review"><input type="checkbox" id="planReviewed"> این پیش‌نویس توسط درمانگر بازبینی و اصلاح شده است.</label><textarea id="planEdits" rows="3" placeholder="اصلاحات، مسئول اقدام و جزئیات برنامه مورد تأیید درمانگر..."></textarea><button class="secondary-btn" id="savePlanToAssessment" type="button">ذخیره پیش‌نویس پلن در ارزیابی</button>`;
  $('#savePlanToAssessment').onclick=()=>{
    const wid=get('assessmentWound'); if(!wid){toast('ابتدا زخم را انتخاب کنید.');return}
-   state.assessments.push({id:id(),woundId:wid,created:new Date().toISOString(),kind:'care-plan-draft',data:{urgency,items:plan,clinicalDomains:domains,gradeSummary,riskFlags,dressingConsiderations:dressing,reviewed:$('#planReviewed').checked,clinicianEdits:$('#planEdits').value,disclaimer:'Draft decision support only; clinician approval required.'}});
-   persist();toast('پیش‌نویس پلن ذخیره شد.');
+   const draftRecord={id:id(),woundId:wid,created:new Date().toISOString(),kind:'care-plan-draft',data:{urgency,items:plan,clinicalDomains:domains,gradeSummary,riskFlags,dressingConsiderations:dressing,reviewed:$('#planReviewed').checked,clinicianEdits:$('#planEdits').value,disclaimer:'Draft decision support only; clinician approval required.'}};
+   state.assessments.push(draftRecord);
+   if(!persist()){state.assessments.pop();return;}
+   toast('پیش‌نویس پلن مراقبت ذخیره شد.');
  };
 }
 $('#calculateScores')?.addEventListener('click',()=>{computeClinicalScores();buildCarePlan()});
@@ -258,7 +572,7 @@ async function makeWoundReportCanvas(){
  const pid=$('#reportPatient')?.value,wid=$('#reportWound')?.value;
  const p=state.patients.find(x=>x.id===pid),w=state.wounds.find(x=>x.id===wid);
  if(!p||!w){toast('ابتدا بیمار و زخم را انتخاب کنید.');return null}
- const a=latestForWound(wid,'clinical-assessment'),img=latestImageForWound(wid),plan=latestForWound(wid,'care-plan-draft');
+ const a=latestForWound(wid,'clinical-assessment'),img=latestImageForWound(wid),plan=latestForWound(wid,'care-plan-stage7');
  const c=document.createElement('canvas');c.width=1500;c.height=2700;
  const ctx=c.getContext('2d');ctx.fillStyle='#f4f8fa';ctx.fillRect(0,0,c.width,c.height);
  ctx.fillStyle='#082b4b';ctx.fillRect(0,0,c.width,190);
@@ -306,3 +620,186 @@ $('#downloadWoundReportPdf')?.addEventListener('click',async()=>{
 const _persistReportRefresh=persist;persist=function(){_persistReportRefresh();if($('#reportPatient'))fillReportPatients()};
 
 setTimeout(()=>{if($('#reportPatient'))fillReportPatients()},250);
+
+
+
+// ===== Stage 8: longitudinal report, assessment history and visit comparison =====
+function renderReportHistoryComparison(){
+ const box=$('#reportHistoryComparison');if(!box)return;
+ const wid=$('#reportWound')?.value;
+ if(!wid){box.innerHTML='<p>برای مشاهده تاریخچه، بیمار و زخم را انتخاب کنید.</p>';return}
+ const records=state.assessments.filter(a=>a.woundId===wid&&a.kind==='clinical-assessment').sort((a,b)=>new Date(a.created)-new Date(b.created));
+ if(!records.length){box.innerHTML='<p>برای این زخم ارزیابی ثبت‌شده‌ای وجود ندارد.</p>';return}
+ const rows=records.map((a,i)=>{
+  const d=a.data||{},im=d.imageMeasurement||{};
+  const prev=i?records[i-1].data?.imageMeasurement:null;
+  const delta=prev&&Number(prev.areaCm2)>0&&Number.isFinite(Number(im.areaCm2))?((Number(im.areaCm2)-Number(prev.areaCm2))/Number(prev.areaCm2))*100:null;
+  return `<tr><td>${new Date(a.created).toLocaleString('fa-IR')}</td><td>${reportEsc(im.areaCm2??'ثبت نشده')}</td><td>${reportEsc(d.lengthCm??im.lengthCm??'—')} × ${reportEsc(d.widthCm??im.widthCm??'—')}</td><td>${delta===null?'—':(delta>0?'+':'')+delta.toFixed(1)+'٪'}</td><td>${reportEsc(d.assessor||'—')}</td></tr>`;
+ });
+ box.innerHTML=`<h3>تاریخچه و مقایسه مراجعات</h3><div class="table-scroll"><table><thead><tr><th>تاریخ ارزیابی</th><th>مساحت (cm²)</th><th>طول × عرض</th><th>تغییر نسبت به مراجعه قبل</th><th>ارزیاب</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+}
+async function downloadFullHistoryPdf(){
+ const wid=$('#reportWound')?.value,p=state.patients.find(x=>x.id===$('#reportPatient')?.value),w=state.wounds.find(x=>x.id===wid);
+ if(!p||!w){toast('ابتدا بیمار و زخم را انتخاب کنید.');return}
+ const records=state.assessments.filter(a=>a.woundId===wid&&a.kind==='clinical-assessment').sort((a,b)=>new Date(a.created)-new Date(b.created));
+ if(!records.length){toast('برای این زخم ارزیابی ثبت‌شده‌ای وجود ندارد.');return}
+ const esc=reportEsc;
+ const pages=records.map((a,i)=>{
+  const d=a.data||{},im=d.imageMeasurement||{},img=state.images.find(x=>x.id===im.imageId)||latestImageForWound(wid);
+  const prev=i?records[i-1].data?.imageMeasurement:null;
+  const delta=prev&&Number(prev.areaCm2)>0&&Number.isFinite(Number(im.areaCm2))?((Number(im.areaCm2)-Number(prev.areaCm2))/Number(prev.areaCm2))*100:null;
+  const fields=reportRows(p,w,a,img);
+  const imageHtml=img?.image?`<img class="visit-image" src="${img.image}" alt="تصویر زخم در مراجعه ${i+1}">`:'<p>تصویر متصل به این ارزیابی در دسترس نیست.</p>';
+  return `<section class="print-page"><header><h1>WoundAI — گزارش تاریخچه زخم</h1><h2>${esc(p.name)} | ${esc(w.site)}</h2><p>مراجعه ${i+1} از ${records.length} · ${esc(new Date(a.created).toLocaleString('fa-IR'))}</p></header>${imageHtml}<table>${fields.map(([k,v])=>`<tr><th>${esc(k)}</th><td>${esc(v)}</td></tr>`).join('')}</table><h3>تغییر مساحت نسبت به مراجعه قبل</h3><p>${delta===null?'قابل محاسبه نیست':(delta>0?'افزایش ':'کاهش ')+Math.abs(delta).toFixed(1)+'٪'}</p><footer>گزارش مستندات؛ جایگزین تشخیص یا دستور درمان نیست.</footer></section>`;
+ });
+ const win=window.open('','_blank');if(!win){toast('اجازه بازشدن پنجره چاپ را فعال کنید.');return}
+ win.document.write(`<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>WoundAI History</title><style>@page{size:A4;margin:12mm}body{font-family:Tahoma,Arial,sans-serif;color:#183b52}.print-page{page-break-after:always;break-after:page}.print-page:last-child{page-break-after:auto;break-after:auto}h1{color:#087f82}header{border-bottom:2px solid #087f82;margin-bottom:12px}.visit-image{max-width:100%;max-height:220px;object-fit:contain;display:block;margin:12px auto}table{width:100%;border-collapse:collapse;font-size:11px}td,th{border:1px solid #d7e3e8;padding:6px;text-align:right}th{background:#eef5f7;width:28%}footer{margin-top:24px;font-size:10px;color:#607987}@media screen{body{max-width:850px;margin:25px auto}.print-page{padding:25px;border:1px solid #ddd;margin-bottom:20px}}</style></head><body>${pages.join('')}<script>window.onload=()=>setTimeout(()=>window.print(),500)<\/script></body></html>`);
+ win.document.close();
+}
+$('#reportWound')?.addEventListener('change',renderReportHistoryComparison);
+$('#downloadFullHistoryPdf')?.addEventListener('click',downloadFullHistoryPdf);
+const _stage8Preview=renderWoundReportPreview;
+renderWoundReportPreview=async function(){await _stage8Preview();renderReportHistoryComparison()};
+
+// ===== Stage 9: local identity + encrypted portable backup (not cloud authentication) =====
+const LOCAL_ID_KEY='woundai.local.identity.v1';
+function stage9Identity(){
+ let x=null;try{x=JSON.parse(localStorage.getItem(LOCAL_ID_KEY)||'null')}catch(e){}
+ if(!x||!x.id){x={id:'WAI-'+(crypto.randomUUID?crypto.randomUUID().slice(0,8).toUpperCase():Date.now().toString(36).toUpperCase()),name:''};localStorage.setItem(LOCAL_ID_KEY,JSON.stringify(x))}
+ $('#localUserId').value=x.id;$('#localUserName').value=x.name||'';
+}
+$('#saveLocalIdentity')?.addEventListener('click',()=>{
+ const name=$('#localUserName').value.trim();if(!name){toast('نام کاربر را وارد کنید.');return}
+ const old=JSON.parse(localStorage.getItem(LOCAL_ID_KEY)||'{}');localStorage.setItem(LOCAL_ID_KEY,JSON.stringify({...old,name}));
+ $('#stage9Status').textContent='شناسه محلی کاربر ذخیره شد؛ این شناسه حساب آنلاین یا احراز هویت نیست.';
+});
+async function stage9Key(pass,salt){
+ const material=await crypto.subtle.importKey('raw',new TextEncoder().encode(pass),'PBKDF2',false,['deriveKey']);
+ return crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:250000,hash:'SHA-256'},material,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
+}
+$('#exportEncryptedBackup')?.addEventListener('click',async()=>{
+ const pass=$('#vaultPassphrase').value;if(pass.length<12){toast('عبارت عبور باید حداقل ۱۲ نویسه باشد.');return}
+ try{
+  if(!crypto?.subtle)throw Error('مرورگر باید HTTPS و Web Crypto را پشتیبانی کند.');
+  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12)),key=await stage9Key(pass,salt);
+  const payload=new TextEncoder().encode(JSON.stringify({app:'WoundAI',version:3,exportedAt:new Date().toISOString(),state,identity:JSON.parse(localStorage.getItem(LOCAL_ID_KEY)||'null')}));
+  const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv},key,payload);
+  const pack={format:'WoundAI-Encrypted-Backup-v1',kdf:'PBKDF2-SHA256-250000',cipher:'AES-256-GCM',salt:Array.from(salt),iv:Array.from(iv),data:Array.from(new Uint8Array(cipher))};
+  download(`WoundAI-encrypted-backup-${new Date().toISOString().slice(0,10)}.woundai`,JSON.stringify(pack),'application/json');
+  $('#stage9Status').textContent='فایل پشتیبان رمزنگاری‌شده ساخته شد. عبارت عبور را امن نگه دارید؛ بدون آن بازیابی ممکن نیست.';
+ }catch(e){$('#stage9Status').textContent='ساخت پشتیبان ناموفق بود: '+e.message}
+});
+$('#importEncryptedBackup')?.addEventListener('change',async e=>{
+ const f=e.target.files?.[0];if(!f)return;const pass=$('#vaultPassphrase').value;
+ if(pass.length<12){toast('ابتدا عبارت عبور حداقل ۱۲ نویسه‌ای را وارد کنید.');e.target.value='';return}
+ try{
+  const pack=JSON.parse(await f.text());if(pack.format!=='WoundAI-Encrypted-Backup-v1')throw Error('قالب فایل معتبر نیست.');
+  const key=await stage9Key(pass,new Uint8Array(pack.salt));
+  const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv:new Uint8Array(pack.iv)},key,new Uint8Array(pack.data));
+  const obj=JSON.parse(new TextDecoder().decode(plain)),s=obj.state;
+  if(obj.app!=='WoundAI'||!s||!Array.isArray(s.patients)||!Array.isArray(s.wounds)||!Array.isArray(s.assessments)||!Array.isArray(s.images))throw Error('ساختار اطلاعات پشتیبان معتبر نیست.');
+  if(!confirm('بازیابی، اطلاعات فعلی را با اطلاعات فایل جایگزین می‌کند. ادامه می‌دهید؟'))return;
+  state.patients=s.patients;state.wounds=s.wounds;state.assessments=s.assessments;state.images=s.images;state.aiModel=s.aiModel||null;
+  if(!persist())throw Error('ذخیره‌سازی اطلاعات بازیابی‌شده ناموفق بود.');
+  if(obj.identity)localStorage.setItem(LOCAL_ID_KEY,JSON.stringify(obj.identity));
+  load();renderPatients();fillReportPatients();stage9Identity();
+  $('#stage9Status').textContent='بازیابی فایل رمزنگاری‌شده با موفقیت انجام شد.';
+ }catch(err){$('#stage9Status').textContent='بازیابی ناموفق بود؛ عبارت عبور یا سلامت فایل را بررسی کنید.'}
+ finally{e.target.value=''}
+});
+try{stage9Identity()}catch(e){}
+
+// ===== Stage 10: runtime self-test and PWA install affordance =====
+let stage10InstallPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();stage10InstallPrompt=e;$('#installPwaBtn').disabled=false;$('#pwaInstallStatus').textContent='این مرورگر امکان نصب برنامه را فراهم کرده است.'});
+$('#installPwaBtn')?.addEventListener('click',async()=>{
+ if(!stage10InstallPrompt){$('#pwaInstallStatus').textContent='از منوی مرورگر گزینه Add to Home Screen / Install app را انتخاب کنید.';return}
+ stage10InstallPrompt.prompt();const result=await stage10InstallPrompt.userChoice;$('#pwaInstallStatus').textContent=result.outcome==='accepted'?'درخواست نصب پذیرفته شد.':'نصب لغو شد.';stage10InstallPrompt=null;$('#installPwaBtn').disabled=true;
+});
+$('#runFinalTests')?.addEventListener('click',async()=>{
+ const checks=[];
+ const add=(name,ok,detail='')=>checks.push({name,ok,detail});
+ add('ساختار صفحات اصلی', ['dashboard','patients','imaging','ai','clinical','careplan','reports','security','finaltest'].every(p=>document.querySelector(`#page-${p}`)));
+ add('فرم ثبت بیمار',!!$('#patientForm')&&!!$('#pName')&&!!$('#pCode'));
+ add('فرم ثبت زخم',!!$('#woundForm')&&!!$('#wSite'));
+ add('کنترل تصویربرداری',!!$('#capturePhoto')&&!!$('#saveImageRecord')&&!!$('#drawCanvas'));
+ add('فرم ارزیابی بالینی',!!$('#saveClinical')&&!!$('#assessmentWound'));
+ add('ماژول ANN',!!$('#trainAnnBtn')&&!!$('#runAnnBtn')&&typeof trainANN==='function');
+ add('تولید برنامه مراقبتی',!!$('#stage7Generate')&&typeof stage7Generate==='function');
+ add('گزارش PNG و PDF',!!$('#downloadWoundReportPng')&&!!$('#downloadWoundReportPdf')&&!!$('#downloadFullHistoryPdf'));
+ add('ذخیره‌سازی محلی',(()=>{try{const k='woundai.selftest';localStorage.setItem(k,'1');localStorage.removeItem(k);return true}catch(e){return false}})());
+ add('Web Crypto',!!(window.crypto&&crypto.subtle));
+ add('Service Worker',('serviceWorker' in navigator));
+ add('دوربین / API',!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia),'برای تأیید واقعی، مجوز دوربین و محیط HTTPS لازم است.');
+ add('نصب PWA',!!document.querySelector('link[rel="manifest"]')&&'serviceWorker' in navigator,'قابلیت نصب نهایی به HTTPS و manifest معتبر وابسته است.');
+ $('#finalTestResults').innerHTML=checks.map(x=>`<div class="final-test-row"><b>${x.ok?'✓':'!'}</b><span>${reportEsc(x.name)}${x.detail?`<small>${reportEsc(x.detail)}</small>`:''}</span><em class="${x.ok?'pass':'warn'}">${x.ok?'موجود':'بررسی لازم'}</em></div>`).join('')+`<p class="micro-note">این آزمون وجود API و اتصال اجزا را بررسی می‌کند؛ جایگزین تست واقعی دوربین، لمس، نصب، بازیابی یا آزمون امنیتی نیست.</p>`;
+});
+
+// ===== Stage 2: Patient record lifecycle =====
+let editingPatientId=null;
+function openPatientEditor(patientId=null){
+ editingPatientId=patientId;
+ const p=patientId?state.patients.find(x=>x.id===patientId):null;
+ if(patientId&&!p){toast('پرونده بیمار پیدا نشد.');return;}
+ $('#patientForm').reset();
+ pendingPatientPhoto=p?.photo||'';
+ $('#pPhoto').value='';
+ showPatientPhoto(p?.photo||'');
+ for(const [id,key] of Object.entries({pName:'name',pCode:'code',pDob:'dob',pSex:'sex',pDiabetes:'diabetes',pVascular:'vascular',pPhone:'phone',pEmergency:'emergencyContact',pAllergies:'allergies',pMedications:'medications',pHistory:'history'})){
+  const el=$('#'+id);if(el)el.value=p?.[key]|| (id==='pSex'||id==='pDiabetes'||id==='pVascular'?'unknown':'');
+ }
+ $('#pConsent').checked=!!p?.consent;
+ $('#modalTitle').textContent=p?'ویرایش پرونده بیمار':'ثبت بیمار جدید';
+ $('#modalBackdrop').hidden=false;
+ $('#pName').focus();
+}
+$('#newPatientBtn').onclick=()=>openPatientEditor();
+$('#addPatientBtn').onclick=()=>openPatientEditor();
+$('#quickPatient').onclick=()=>openPatientEditor();
+$('#patientForm').onsubmit=e=>{
+ e.preventDefault();
+ const name=$('#pName').value.trim();
+ if(!name){toast('نام بیمار الزامی است.');$('#pName').focus();return;}
+ const existing=editingPatientId?state.patients.find(x=>x.id===editingPatientId):null;
+ const code=$('#pCode').value.trim()||existing?.code||'WA-'+Date.now().toString().slice(-7);
+ if(state.patients.some(x=>String(x.code).toLowerCase()===code.toLowerCase()&&x.id!==editingPatientId)){toast('این کد پرونده قبلاً ثبت شده است.');$('#pCode').focus();return;}
+ const fields={name,code,dob:$('#pDob').value,sex:$('#pSex').value,diabetes:$('#pDiabetes').value,vascular:$('#pVascular').value,phone:$('#pPhone').value.trim(),emergencyContact:$('#pEmergency').value.trim(),allergies:$('#pAllergies').value.trim(),medications:$('#pMedications').value.trim(),history:$('#pHistory').value.trim(),photo:pendingPatientPhoto||'',consent:$('#pConsent').checked,updated:new Date().toISOString()};
+ if(existing){Object.assign(existing,fields);}
+ else state.patients.push({id:id(),...fields,created:new Date().toISOString(),status:'active'});
+ if(!persist()){if(!existing)state.patients.pop();return;}
+ closeModal();renderPatients();renderStats();populateImagePatientSelect();goto('patients');
+ toast(existing?'اطلاعات پرونده به‌روزرسانی شد.':'پرونده بیمار ذخیره شد.');
+ editingPatientId=null;
+};
+function viewPatientRecord(patientId){
+ const p=state.patients.find(x=>x.id===patientId);if(!p)return;
+ const wounds=state.wounds.filter(w=>w.patientId===p.id);
+ const safe=v=>esc(v||'ثبت نشده');
+ const panel=`<div class="patient-detail-overlay" id="patientDetailOverlay"><section class="patient-detail-panel"><div class="panel-head"><div><p class="eyebrow teal">PATIENT RECORD</p><h2>${esc(p.name)}</h2><small>کد پرونده: ${esc(p.code)}</small></div><button class="icon-btn" id="closePatientDetail" type="button">×</button></div>
+ ${p.photo?`<img class="patient-detail-photo" src="${p.photo}" alt="عکس بیمار">`:''}
+ <div class="patient-detail-grid">
+ <div><small>تاریخ تولد</small><b>${safe(p.dob)}</b></div><div><small>جنس</small><b>${safe(p.sex)}</b></div>
+ <div><small>دیابت</small><b>${safe(p.diabetes)}</b></div><div><small>بیماری عروقی / PAD</small><b>${safe(p.vascular)}</b></div>
+ <div><small>شماره تماس</small><b>${safe(p.phone)}</b></div><div><small>تماس ضروری</small><b>${safe(p.emergencyContact)}</b></div>
+ <div class="wide"><small>آلرژی‌ها و واکنش</small><b>${safe(p.allergies)}</b></div>
+ <div class="wide"><small>داروهای مصرفی</small><b>${safe(p.medications)}</b></div>
+ <div class="wide"><small>سوابق پزشکی و جراحی</small><b>${safe(p.history)}</b></div></div>
+ <h3>زخم‌های ثبت‌شده (${wounds.length})</h3>
+ ${wounds.length?wounds.map(w=>`<div class="patient-detail-wound"><b>${esc(w.site||'محل ثبت نشده')}</b><span>${esc(w.etiology||'اتیولوژی نامشخص')}</span><small>ارزیابی‌ها: ${state.assessments.filter(a=>a.woundId===w.id).length}</small></div>`).join(''):'<p class="muted">هنوز زخمی برای این پرونده ثبت نشده است.</p>'}
+ <div class="modal-actions"><button class="secondary-btn" id="detailEditPatient" type="button">ویرایش پرونده</button><button class="primary-btn" id="detailAddWound" type="button">افزودن زخم</button></div>
+ <small class="security-warning">نسخه توسعه‌ای: داده‌ها فقط در همین مرورگر ذخیره می‌شوند. برای اطلاعات واقعی بیمار از این نسخه استفاده نکنید.</small></section></div>`;
+ document.querySelector('#patientDetailOverlay')?.remove();
+ document.body.insertAdjacentHTML('beforeend',panel);
+ $('#closePatientDetail').onclick=()=>$('#patientDetailOverlay').remove();
+ $('#patientDetailOverlay').addEventListener('click',e=>{if(e.target.id==='patientDetailOverlay')e.currentTarget.remove()});
+ $('#detailEditPatient').onclick=()=>{$('#patientDetailOverlay').remove();openPatientEditor(patientId)};
+ $('#detailAddWound').onclick=()=>{$('#patientDetailOverlay').remove();addWound(patientId)};
+}
+document.addEventListener('click',e=>{
+ const edit=e.target.closest('[data-edit-patient]');if(edit){openPatientEditor(edit.dataset.editPatient);return;}
+ const view=e.target.closest('[data-view-patient]');if(view){viewPatientRecord(view.dataset.viewPatient);return;}
+});
+
+// Stage 3: refresh patient/wound selectors whenever imaging page is opened.
+document.addEventListener('click',e=>{const nav=e.target.closest('[data-page="imaging"],[data-goto="imaging"]');if(nav)setTimeout(populateImagePatientSelect,0)});
+window.addEventListener('load',()=>{populateImagePatientSelect();});

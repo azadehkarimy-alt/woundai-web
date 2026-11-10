@@ -1,0 +1,68 @@
+WoundAI — Integration Fixes (Stages 1–6)
+=========================================
+
+Applied fixes
+-------------
+1. Patient record:
+   - Removed the obsolete duplicate patient form submit assignment.
+   - Kept one authoritative edit-aware handler that stores name, code, DOB, sex,
+     diabetes, vascular history, phone, emergency contact, allergies,
+     medications, history, photo, consent, status and timestamps.
+2. Imaging:
+   - Removed the legacy image-save listener that could silently reassign the
+     most recently saved image to another wound.
+   - Kept the validated save path requiring a selected patient and a wound
+     belonging to that patient.
+   - Image and measurement records retain patientId, woundId and imageId.
+3. Measurement:
+   - Selecting a wound now refreshes length and width from that wound's latest
+     image measurement rather than leaving stale values from a previously
+     selected wound.
+   - Measurement provenance (image ID, date, calibration and dimensions) is
+     stored in the clinical assessment snapshot.
+   - Area is not fabricated by multiplying length and width for irregular
+     wounds; only measured calibrated area is passed through.
+4. ANN:
+   - Clinical values are prefilled into the ANN form when opening the ANN page
+     and when changing the selected wound; the explicit fill button remains.
+   - Predictions are saved as research-only records linked to the selected
+     wound and then referenced in the clinical assessment snapshot.
+   - Training split is stratified; normalization parameters are fit on the
+     training subset only (prevents test-data leakage).
+   - Initialization is deterministic; validation rejects tiny datasets and
+     datasets lacking both classes.
+5. Clinical assessment:
+   - Each assessment record now includes patientId as well as woundId.
+   - Assessment snapshot records the exact image measurement provenance and
+     the linked ANN research prediction.
+6. Persistence:
+   - Existing local browser persistence and backup/restore remain in place.
+   - Storage is still local browser storage, not encrypted server storage.
+
+Automated checks
+----------------
+- JavaScript syntax: passed.
+- Duplicate HTML IDs: none.
+- Single patient submit handler: passed.
+- Single image-save handler: passed.
+- Single ANN run handler: passed.
+- ANN synthetic regression: passed (40 synthetic records, stratified 32/8,
+  deterministic repeat, probability sum approximately 1, invalid dataset
+  checks passed).
+- ZIP integrity: passed.
+
+Known limitations / not yet verified
+------------------------------------
+- No real browser automation or physical-device test was available in this
+  execution. Camera permission, touch gestures, actual file upload, offline
+  service-worker behavior and persistence after browser restart still require
+  manual device testing.
+- LocalStorage is not a secure clinical database and is not encrypted. Do not
+  enter identifiable real patient information in this development build.
+- ANN remains a research prototype trained on user-supplied labeled data.
+  Synthetic smoke tests do not establish clinical validity.
+- ANN output is stored as a separate research record and shown as research
+  metadata; it is not used to autonomously determine diagnosis, dressing,
+  urgency or treatment.
+- Stage 7 (integrated care-plan generation/review workflow as a separate
+  development milestone) has not been completed.

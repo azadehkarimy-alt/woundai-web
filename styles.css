@@ -138,3 +138,138 @@
 .clinical-domain:nth-child(5){border-color:#e9c8b8;background:#fffaf7}
 .clinical-domain:nth-child(6){border-color:#c9e2e0;background:#f5fbfa}
 @media(max-width:650px){.clinical-seven{padding:13px}.clinical-seven-grid{grid-template-columns:1fr}.clinical-domain{padding:12px}.clinical-domain p{font-size:12px}}
+
+/* Stage 1 identity refinement: larger approved WoundAI mark */
+.brand-card{padding:18px 12px 14px!important;min-height:142px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+.brand-card img{width:100%;height:112px;max-height:112px;object-fit:contain}
+.brand-sub{font-size:11px;margin-top:2px;text-align:center}
+.logo-avatar{width:48px!important;height:48px!important;min-width:48px!important}
+.logo-avatar img{width:43px;height:43px;object-fit:contain}
+
+/* Stage 2 — patient profile details */
+.patient-detail-overlay{position:fixed;inset:0;z-index:1200;background:#061827b8;display:flex;align-items:center;justify-content:center;padding:16px;overflow:auto}
+.patient-detail-panel{width:min(760px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px;padding:22px;box-shadow:0 24px 70px #06182755;color:#0b2f4a}
+.patient-detail-photo{width:112px;height:112px;object-fit:cover;border-radius:18px;margin:12px 0}
+.patient-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:18px 0}
+.patient-detail-grid>div{padding:12px;border:1px solid #dce8ec;border-radius:12px;min-width:0}
+.patient-detail-grid .wide{grid-column:1/-1}
+.patient-detail-grid small,.patient-detail-grid b{display:block;overflow-wrap:anywhere}
+.patient-detail-grid small{color:#73838d;margin-bottom:5px}
+.patient-detail-grid b{font-size:14px;white-space:pre-wrap;line-height:1.8}
+.patient-detail-wound{display:flex;flex-direction:column;gap:5px;padding:12px;border-bottom:1px solid #e5edf0}
+.patient-detail-wound span,.patient-detail-wound small{color:#657985}
+.security-warning{display:block;margin-top:16px;color:#8a5b28;line-height:1.8}
+@media(max-width:560px){.patient-detail-panel{padding:16px}.patient-detail-grid{grid-template-columns:1fr}.patient-detail-grid .wide{grid-column:auto}}
+
+/* Stage 3 — linked wound imaging and longitudinal image history */
+.image-record-link{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px;margin:14px 0;border:1px solid #dce9ee;border-radius:14px;background:#f5fafb}
+.image-record-link .field{min-width:0}
+.image-record-link label{display:block;margin-bottom:6px;font-weight:700;color:#24475b}
+.image-record-link input,.image-record-link select,.image-record-link textarea{width:100%;min-width:0}
+.saved-image-history{margin-top:18px;padding:14px;border:1px solid #dce9ee;border-radius:14px;background:#f7fbfc}
+.image-history-list{display:grid;gap:10px}
+.image-history-card{display:flex;align-items:center;gap:12px;padding:10px;border:1px solid #e1ebef;border-radius:12px;background:#fff;min-width:0}
+.image-history-card img{width:88px;height:76px;object-fit:cover;border-radius:9px;background:#eaf1f4;flex:none}
+.image-history-card div{display:flex;flex-direction:column;gap:5px;min-width:0}
+.image-history-card b{font-size:13px;color:#173d54}
+.image-history-card small{font-size:11px;color:#637b88;overflow-wrap:anywhere}
+@media(max-width:560px){.image-record-link{grid-template-columns:1fr}.image-history-card img{width:72px;height:68px}}
+
+/* Stage 4 — mobile-first wound measurement controls */
+.measurement-grid-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px;margin:12px 0;background:#f2f8fa;border:1px solid #dce9ee;border-radius:12px}
+.grid-toggle{display:flex;align-items:center;gap:7px;font-weight:700;color:#17445a}
+.grid-step-label{font-size:12px;color:#607987}
+.measurement-grid-tools select{min-width:86px;padding:7px;border:1px solid #cadce3;border-radius:8px;background:#fff}
+.measure-dimensions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}
+.measure-dimensions>div{padding:12px 8px;border:1px solid #dce9ee;border-radius:12px;background:#fff;text-align:center;min-width:0}
+.measure-dimensions small,.measure-dimensions strong{display:block}
+.measure-dimensions small{font-size:11px;color:#6c828e;margin-bottom:6px}
+.measure-dimensions strong{font-size:clamp(13px,3.5vw,18px);color:#087f82;overflow-wrap:anywhere}
+.measurement-comparison{padding:11px 13px;margin:8px 0 14px;border-radius:10px;background:#f4f8fb;color:#38586a;font-size:12px;line-height:1.8}
+#drawCanvas{touch-action:none;cursor:crosshair}
+@media(max-width:520px){.measure-dimensions{gap:6px}.measure-dimensions>div{padding:10px 4px}.measurement-grid-tools{gap:8px}}
+
+/* Stage 5 — ANN research workspace */
+.ai-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.ai-safety{border-inline-start:4px solid #d39a35;background:#fffaf0;padding:15px;margin-bottom:16px}
+.ai-safety p{margin:8px 0 0;line-height:1.9;color:#6b5b3d;font-size:13px}
+.feature-schema{display:block;white-space:normal;overflow-wrap:anywhere;padding:12px;border-radius:10px;background:#eff6f8;color:#16506a;margin:12px 0;font-size:11px;line-height:1.8}
+.ai-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.ai-status,.ai-prediction{padding:13px;margin-top:12px;border-radius:12px;background:#f2f8fa;color:#31586b;line-height:1.9;font-size:13px}
+.ann-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.ann-metrics>div{padding:10px 5px;border:1px solid #dce9ee;border-radius:10px;text-align:center;min-width:0}
+.ann-metrics b,.ann-metrics small{display:block}
+.ann-metrics b{font-size:16px;color:#087f82;overflow-wrap:anywhere}
+.ann-metrics small{font-size:10px;color:#6b808c;margin-top:4px}
+.ann-input-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.ann-input-grid .field{min-width:0}
+.ai-prediction b{color:#087f82}
+.ai-prediction small{display:block;color:#805e2c;margin-top:10px;line-height:1.9}
+@media(max-width:800px){.ai-layout{grid-template-columns:1fr}}
+@media(max-width:480px){.ann-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.ann-input-grid{grid-template-columns:1fr}}
+
+/* Stage 6 — seven-domain clinical assessment summary */
+.clinical-seven{margin-top:20px;padding:16px;border:1px solid #d7e7eb;border-radius:16px;background:#f8fbfc}
+.clinical-seven>h3{margin:0 0 8px;color:#123e55}
+.clinical-seven-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.clinical-domain{padding:13px;border:1px solid #dce9ee;border-radius:12px;background:#fff;min-width:0}
+.clinical-domain b{display:block;color:#087f82;font-size:13px;margin-bottom:7px}
+.clinical-domain p{margin:0;color:#39586a;font-size:12px;line-height:1.9;overflow-wrap:anywhere}
+.care-plan-output{margin-top:14px;padding:15px;border:1px solid #dce9ee;border-radius:14px;background:#fff}
+.care-plan-output ol{padding-inline-start:22px;line-height:2}
+.plan-banner{display:flex;flex-direction:column;gap:5px;padding:12px;border-radius:10px;background:#eef7f5;color:#165d58}
+.plan-banner.urgent{background:#fff1ed;color:#a33320;border:1px solid #f0c5b9}
+.plan-banner small{font-size:11px}
+.plan-review{display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px}
+#planEdits{width:100%;margin:8px 0}
+@media(max-width:650px){.clinical-seven-grid{grid-template-columns:1fr}}
+
+/* Integration fixes — linked measurement and research hand-off */
+#measurementLinkStatus{padding:9px 12px;border-radius:10px;background:#eef7f8;color:#31586b;line-height:1.8}
+#fillAnnFromClinical{margin:10px 0}
+
+/* Stage 7 — clinician-reviewed care plan workspace */
+.stage7-safety{padding:15px 17px;margin:0 0 16px;border:1px solid #ead8b4;border-inline-start:4px solid #c18a32;border-radius:13px;background:#fffaf0;color:#70552b}
+.stage7-safety p{margin:7px 0 0;font-size:13px;line-height:1.9}
+.stage7-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+.stage7-output{display:grid;gap:14px;margin:16px 0}
+.stage7-empty{padding:22px;text-align:center;color:#617986;line-height:2}
+.stage7-plan-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:15px}
+.stage7-plan-head h3{margin:5px 0;color:#173f55}
+.stage7-plan-head small{font-size:11px;color:#718591}
+.stage7-urgency{padding:8px 12px;border-radius:10px;background:#eef6f3;color:#23675b;font-size:12px;font-weight:700;max-width:260px}
+.stage7-summary-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.stage7-summary-cell{padding:12px;border:1px solid #e0eaed;border-radius:11px;background:#fbfdfe;min-width:0}
+.stage7-summary-cell small,.stage7-summary-cell b{display:block}
+.stage7-summary-cell small{font-size:11px;color:#70838d;margin-bottom:6px}
+.stage7-summary-cell b{font-size:13px;color:#294e60;line-height:1.7;overflow-wrap:anywhere}
+.stage7-list{padding-inline-start:22px;line-height:2.05;color:#34566a}
+.stage7-review-panel{margin-top:18px}
+.stage7-review-panel h3{margin-top:0}
+.stage7-approval{display:flex;align-items:flex-start;gap:9px;margin:14px 0;padding:12px;border:1px solid #e2e9ec;border-radius:10px;background:#f7fafb;font-size:13px;line-height:1.8}
+.stage7-history{display:grid;gap:9px}
+.stage7-history-item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #e1e9ed;border-radius:11px;background:#fff}
+.stage7-history-item b,.stage7-history-item small{display:block}
+.stage7-history-item b{font-size:13px;color:#23495d}
+.stage7-history-item small{font-size:11px;color:#71838d;margin-top:5px}
+.stage7-history-item>span{font-size:11px;color:#597383;text-align:end}
+@media(max-width:700px){.stage7-summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:460px){.stage7-summary-grid{grid-template-columns:1fr}.stage7-plan-head{display:block}.stage7-urgency{display:inline-block;margin-top:8px}.stage7-history-item{align-items:flex-start;flex-direction:column}.stage7-history-item>span{text-align:start}}
+
+/* Stages 8–10 */
+.report-history-comparison{margin:16px 0;padding:14px;border:1px solid #dce8ec;border-radius:13px;background:#fbfdfe;overflow-x:auto}
+.report-history-comparison h3{margin:0 0 12px}
+.report-history-comparison table{width:100%;border-collapse:collapse;min-width:600px;font-size:12px}
+.report-history-comparison th,.report-history-comparison td{padding:9px;border-bottom:1px solid #e3ecef;text-align:right;white-space:nowrap}
+.report-history-comparison th{color:#17616b;background:#eff7f8}
+.account-stage9{margin-top:18px}
+.account-stage9>p,.security-grid+.account-stage9 p{font-size:13px;line-height:1.9;color:#58717e}
+.final-test-results{display:grid;gap:8px;margin-top:14px}
+.final-test-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #e1eaed;border-radius:10px;background:#fff}
+.final-test-row>b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:#e9f5ef;color:#20745b}
+.final-test-row span{flex:1;font-size:13px;color:#35566a}
+.final-test-row small{display:block;color:#71838d;font-size:11px;margin-top:3px;line-height:1.7}
+.final-test-row em{font-style:normal;font-size:11px}
+.final-test-row .pass{color:#20745b}.final-test-row .warn{color:#a36b1e}
+.upload-label{display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:600px){.stage7-actions>*{width:100%}.final-test-row{align-items:flex-start;flex-wrap:wrap}.final-test-row em{margin-inline-start:34px}}
