@@ -422,3 +422,42 @@ a,.text-btn{color:#087E83}
 footer,.micro-note,.muted,small{color:var(--wound-muted)}
 ::selection{background:#13C6B455;color:#092C4C}
 @media(max-width:760px){.brand-card img{height:66px}}
+
+
+/* v18 — official branded startup screen */
+.startup-screen{
+ position:fixed;inset:0;z-index:250;display:grid;place-items:center;
+ padding:24px;background:
+ radial-gradient(circle at 18% 18%,rgba(19,198,180,.13),transparent 34%),
+ radial-gradient(circle at 84% 82%,rgba(8,126,131,.11),transparent 32%),
+ linear-gradient(145deg,#EAF8F7 0%,#FFFFFF 55%,#F3FAF9 100%);
+ opacity:1;transition:opacity .35s ease,visibility .35s ease;
+}
+.startup-screen.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.startup-card{
+ width:min(760px,100%);padding:clamp(24px,5vw,52px);
+ display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;
+ background:rgba(255,255,255,.96);border:1px solid #D8E8E8;border-radius:28px;
+ box-shadow:0 28px 90px rgba(9,44,76,.12);
+}
+.startup-logo{display:block;width:min(100%,650px);height:auto;max-height:250px;object-fit:contain}
+.startup-divider{width:min(260px,55%);height:4px;border-radius:8px;background:linear-gradient(90deg,#087E83,#13C6B4,#39D6A3);margin:3px 0}
+.startup-kicker{font-size:clamp(16px,2.5vw,22px);font-weight:800;color:#092C4C;margin:2px 0}
+.startup-version{font-size:13px;letter-spacing:1.1px;font-weight:800;color:#087E83;margin:0}
+.startup-credit{display:grid;gap:5px;margin:8px 0 10px;color:#263746}
+.startup-credit strong{font-size:14px}
+.startup-credit span{font-size:12px;color:#7894A8;font-weight:600}
+.startup-enter{min-width:210px;padding:13px 25px}
+.startup-footnote{font-size:10px;color:#7894A8;letter-spacing:.35px}
+@media(max-width:560px){
+ .startup-screen{padding:16px}
+ .startup-card{padding:28px 18px;border-radius:22px;gap:12px}
+ .startup-logo{max-height:170px}
+ .startup-credit strong{font-size:13px}
+ .startup-credit span{font-size:11px}
+}
+
+/* v18.1 — guided clinical workflow ribbon */
+.workflow-ribbon{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.5vw,16px);flex-wrap:wrap;padding:10px 14px;background:rgba(234,248,247,.96);border-bottom:1px solid #D5E9E7;color:#092C4C;font-size:12px;font-weight:800;backdrop-filter:blur(12px)}
+.workflow-ribbon span{white-space:nowrap}
+.workflow-ribbon i{font-style:normal;color:#13BDB5}

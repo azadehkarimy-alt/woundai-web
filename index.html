@@ -2,12 +2,29 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#092C4C"><meta name="description" content="WoundAI — سامانه هوشمند مستندسازی و مدیریت زخم">
+<meta name="theme-color" content="#092C4C"><meta name="application-name" content="WoundAI"><meta name="description" content="WoundAI — سامانه هوشمند مستندسازی و مدیریت زخم">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/woundai-logo-square.png" type="image/png"><link rel="apple-touch-icon" href="assets/woundai-logo-square.png"><link rel="stylesheet" href="styles.css">
 <title>WoundAI | سامانه مدیریت زخم</title>
 </head>
 <body>
-<div class="app-shell">
+
+<div class="startup-screen" id="startupScreen" role="dialog" aria-modal="true" aria-labelledby="startupTitle">
+  <div class="startup-card">
+    <img class="startup-logo" src="assets/woundai-logo-horizontal.png" alt="WoundAI — Intelligent Wound Management System">
+    <div class="startup-divider"></div>
+    <p class="startup-kicker" id="startupTitle">سامانه هوشمند مدیریت زخم</p>
+    <p class="startup-version" dir="ltr">WoundAI • Version 18.1</p>
+    <div class="startup-credit">
+      <strong>تهیه و تنظیم: دکتر آزاده کریمی</strong>
+      <span dir="ltr">Prepared and curated by Dr. Azadeh karimy</span>
+    </div>
+    <button class="primary-btn startup-enter" id="enterWoundAI" type="button">ورود به سامانه <span aria-hidden="true">←</span></button>
+    <small class="startup-footnote">Intelligent Wound Management System</small>
+  </div>
+</div>
+
+<div class="app-shell" aria-hidden="true" inert>
+
   <aside class="sidebar" id="sidebar">
     <div class="brand-card"><img src="assets/woundai-logo-horizontal.png" alt="WoundAI"><span class="brand-sub">سامانه هوشمند مدیریت زخم</span></div>
     <div class="workspace"><span class="workspace-dot"></span><div><b data-i18n="workspace">فضای کاری کلینیک</b><small id="workspaceName">مرکز پیش‌فرض</small></div></div>
@@ -22,13 +39,17 @@
       <button class="nav-item" data-page="finaltest"><span>✓</span><b>آزمایش نهایی و نصب</b></button>
       <button class="nav-item" data-page="security"><span>♧</span><b data-i18n="security">امنیت و پشتیبان‌گیری</b></button>
     </nav>
-    <div class="sidebar-bottom"><div class="local-status"><i></i><span data-i18n="localMode">حالت ذخیره‌سازی محلی</span></div><small>WoundAI • Pro Web v4.0</small></div>
+    <div class="sidebar-bottom"><div class="local-status"><i></i><span data-i18n="localMode">حالت ذخیره‌سازی محلی</span></div><small>WoundAI • Pro Web v18.1</small></div>
   </aside>
   <main class="main-area">
+<div class="workflow-ribbon" id="workflowRibbon" aria-label="مراحل گردش کار">
+  <span>۱. بیمار</span><i>←</i><span>۲. زخم</span><i>←</i><span>۳. تصویر</span><i>←</i><span>۴. ارزیابی</span><i>←</i><span>۵. برنامه مراقبتی</span><i>←</i><span>۶. گزارش</span>
+</div>
+
     <header class="topbar">
       <button class="icon-btn mobile-menu" id="menuBtn" aria-label="منو">☰</button>
       <div class="top-title"><span class="eyebrow" data-i18n="clinicalWorkspace">CLINICAL WORKSPACE</span><h1 id="pageTitle">داشبورد</h1></div>
-      <div class="top-actions"><span class="date-chip" id="todayLabel"></span><button class="lang-btn" id="langBtn">EN</button><button class="avatar logo-avatar" title="WoundAI"><img src="assets/woundai-icon-192.png" alt="WoundAI"></button></div>
+      <div class="top-actions"><span class="date-chip" id="todayLabel"></span><button class="lang-btn" id="langBtn">EN</button><button class="avatar logo-avatar" title="WoundAI"><img src="assets/woundai-logo-square.png" alt="WoundAI"></button></div>
     </header>
     <div class="safety-banner"><span class="safety-icon">!</span><span data-i18n="safetyNotice">نسخه آزمایشی و پژوهشی؛ خروجی‌ها جایگزین ارزیابی و تشخیص متخصص نیستند. از اطلاعات واقعی بیمار در این نسخه استفاده نکنید.</span></div>
     <section id="page-dashboard" class="page active">

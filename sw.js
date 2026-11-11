@@ -1,4 +1,4 @@
-const CACHE_NAME = 'woundai-release-v17';
+const CACHE_NAME = 'woundai-release-v18-1';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -7,6 +7,8 @@ const CORE_ASSETS = [
   './manifest.webmanifest',
   './assets/woundai-icon-192.png',
   './assets/woundai-icon-512.png',
+  './assets/icon.svg',
+  './icon.svg',
   './assets/woundai-logo.png',
   './assets/woundai-logo-horizontal.png',
   './assets/woundai-logo-square.png'

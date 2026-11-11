@@ -1,5 +1,16 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const DB='woundai_pro_local_v2';let state={patients:[],wounds:[],assessments:[],images:[],aiModel:null};let lang='fa',stream=null,currentImage=null,points=[],calibration=null,calibrationMode=false,calibrationPoints=[],cameraFacing='environment';
+function dismissStartup(){
+ const splash=$('#startupScreen'),shell=$('.app-shell');
+ if(!splash)return;
+ splash.classList.add('is-leaving');
+ splash.setAttribute('aria-hidden','true');
+ splash.addEventListener('transitionend',()=>splash.remove(),{once:true});
+ setTimeout(()=>splash.remove(),500);
+ if(shell){shell.removeAttribute('aria-hidden');shell.inert=false;}
+}
+$('#enterWoundAI')?.addEventListener('click',dismissStartup);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#startupScreen'))dismissStartup();});
+const APP_VERSION='18.1';const DB='woundai_pro_local_v2';let state={patients:[],wounds:[],assessments:[],images:[],aiModel:null};let lang='fa',stream=null,currentImage=null,points=[],calibration=null,calibrationMode=false,calibrationPoints=[],cameraFacing='environment';
 const tr={
 fa:{dashboard:'داشبورد',patients:'بیماران',imaging:'تصویربرداری و اندازه‌گیری',reports:'گزارش‌ها',security:'امنیت و پشتیبان‌گیری',workspace:'فضای کاری کلینیک',localMode:'حالت ذخیره‌سازی محلی',clinicalWorkspace:'فضای کاری بالینی',safetyNotice:'نسخه آزمایشی و پژوهشی؛ خروجی‌ها جایگزین ارزیابی و تشخیص متخصص نیستند. از اطلاعات واقعی بیمار در این نسخه استفاده نکنید.',overview:'نمای کلی',welcome:'خوش آمدید به',dashboardDesc:'مدیریت پرونده‌ها، ارزیابی‌های بالینی و پایش روند زخم در یک فضای یکپارچه.',newPatient:'ثبت بیمار جدید',totalPatients:'کل بیماران',savedOnDevice:'ذخیره‌شده در این دستگاه',activeWounds:'زخم‌های فعال',acrossRecords:'در تمام پرونده‌ها',assessments:'ارزیابی‌ها',clinicalEntries:'ثبت‌های بالینی',followups:'پیگیری‌های ثبت‌شده',plannedFollowups:'برنامه‌های پیگیری',recentPatients:'بیماران اخیر',recentPatientsDesc:'آخرین پرونده‌های ثبت‌شده',viewAll:'مشاهده همه ←',noPatients:'هنوز بیماری ثبت نشده است',addFirstPatient:'برای شروع، اولین پرونده را ایجاد کنید.',quickActions:'دسترسی سریع',quickActionsDesc:'شروع یک فرایند جدید',registerPatient:'ثبت بیمار',createPatientRecord:'ایجاد پرونده و سوابق پایه',captureWound:'تصویربرداری زخم',cameraOrGallery:'دوربین یا انتخاب تصویر',exportData:'خروجی و پشتیبان',backupRecords:'دریافت نسخه پشتیبان اطلاعات',modules:'ماژول‌های تخصصی WoundAI',modulesDesc:'ساختار پرونده و ارزیابی مطابق مشخصات بالینی پروژه',patientManagement:'مدیریت بیمار و چند زخم',patientManagementDesc:'پرونده مستقل، سوابق، مراجعات و رضایت',clinicalForms:'فرم‌های ارزیابی تخصصی',imageAnalysis:'تصویربرداری و اندازه‌گیری',imageAnalysisDesc:'دوربین، کالیبراسیون و ترسیم مرز دستی',longitudinal:'پایش طولی و گزارش',longitudinalDesc:'تاریخچه ارزیابی و خروجی قابل نگهداری',records:'پرونده‌ها',patientDirectory:'فهرست بیماران',patientDirectoryDesc:'پرونده‌ها را جست‌وجو و مدیریت کنید.',allRecords:'همه پرونده‌ها',active:'فعال',archived:'بایگانی‌شده',imagingTitle:'تصویربرداری و اندازه‌گیری زخم',imagingDesc:'تصویر را ثبت کنید، مقیاس را کالیبره و مرز را دستی ترسیم کنید.',imageSource:'منبع تصویر',cameraSecure:'برای دوربین، سایت باید با HTTPS باز شده باشد.',openCamera:'باز کردن دوربین',chooseImage:'انتخاب از گالری',switchCamera:'تعویض دوربین',cameraPlaceholder:'پیش‌نمایش تصویر زخم',cameraHelp:'دوربین را باز کنید یا یک تصویر انتخاب کنید.',cameraIdle:'دوربین هنوز فعال نشده است.',stopCamera:'توقف دوربین',measurementTools:'ابزارهای اندازه‌گیری',manualOnly:'ترسیم دستی؛ تأیید نهایی با ارزیاب',calibrationLength:'طول مرجع (سانتی‌متر)',calibrationPixels:'طول همان خط روی تصویر (پیکسل)',calibrate:'ثبت کالیبراسیون',calibrationNeeded:'برای محاسبه سانتی‌متر مربع، کالیبراسیون معتبر لازم است.',undo:'بازگشت نقطه',clearDrawing:'پاک‌کردن ترسیم',manualArea:'مساحت ترسیم‌شده',drawHint:'برای ترسیم، روی تصویر چند نقطه بزنید.',saveImageAssessment:'ذخیره ارزیابی تصویر',depthWarning:'عمق زخم از عکس دوبعدی محاسبه نمی‌شود؛ آن را با روش بالینی جداگانه ثبت کنید.',aiStatusTitle:'وضعیت هوش مصنوعی',aiStatusBody:'مدل تشخیص و قطعه‌بندی بالینیِ اعتبارسنجی‌شده در این بسته نصب نشده است. این نسخه مرز زخم را به‌صورت خودکار تشخیص نمی‌دهد و نتیجه ساختگی تولید نمی‌کند. محل اتصال مدل AI و ثبت بازبینی متخصص در معماری پیش‌بینی شده است.',researchOnly:'پژوهشی / در انتظار مدل معتبر',reportsTitle:'گزارش و پشتیبان‌گیری',reportsDesc:'از اطلاعات محلی خروجی بگیرید و در صورت نیاز بازیابی کنید.',backupTitle:'دریافت نسخه پشتیبان',backupDesc:'پرونده‌ها، زخم‌ها، ارزیابی‌ها و تصاویر ذخیره‌شده در این مرورگر در یک فایل خروجی قرار می‌گیرند.',downloadBackup:'دانلود پشتیبان JSON',restoreTitle:'بازیابی نسخه پشتیبان',restoreDesc:'فایل پشتیبان قبلی را انتخاب کنید. داده‌ها به اطلاعات موجود اضافه می‌شوند.',summaryTitle:'خلاصه پرونده‌ها',summaryDesc:'خروجی خلاصه بیماران و زخم‌ها برای بررسی و بایگانی.',downloadCsv:'دانلود CSV بیماران',localStorageWarning:'محدودیت مهم ذخیره‌سازی',localStorageWarningBody:'این نسخه برای نمونه‌سازی، داده‌ها را فقط در حافظه مرورگر همین دستگاه نگه می‌دارد. ورود با شناسه، همگام‌سازی بین دستگاه‌ها، رمزنگاری سمت سرور، کنترل نقش واقعی و پشتیبان‌گیری خودکار سروری هنوز فعال نیست. برای اطلاعات واقعی بیمار، ابتدا باید بک‌اند امن، میزبانی مجاز، کنترل دسترسی و آزمون امنیتی راه‌اندازی شود.',securityTitle:'امنیت، حریم خصوصی و دسترسی',securityDesc:'وضعیت فعلی و الزامات نسخه عملیاتی',currentPrototype:'وضعیت این نمونه',localOnly:'ذخیره محلی روی همین مرورگر',manualBackup:'خروجی و بازیابی دستی',noCloudAuth:'ورود و احراز هویت ابری',noEncryption:'رمزنگاری و تفکیک مرکز در سرور',productionChecklist:'الزامات پیش از استفاده واقعی',secureAuth:'احراز هویت امن، MFA و بازیابی حساب',roleAccess:'نقش‌ها و مجوزهای دسترسی در سطح مرکز و پرونده',encryptedStorage:'پایگاه داده و فضای تصویر رمزنگاری‌شده',auditTrail:'ثبت رویدادهای مشاهده، ایجاد، ویرایش و حذف',gdprReview:'بازبینی GDPR / DPIA و الزامات MDR متناسب با بازار',backupRestore:'پشتیبان‌گیری خودکار و آزمون بازیابی',footerNote:'سامانه مستندسازی و پشتیبان تصمیم بالینی • نسخه نمونه‌سازی',patientProfile:'پرونده بیمار',fullName:'نام و نام خانوادگی',recordCode:'کد پرونده',birthDate:'تاریخ تولد',sex:'جنس',unknown:'نامشخص',female:'زن',male:'مرد',diabetes:'دیابت',vascularDisease:'بیماری عروقی / PAD',allergies:'آلرژی‌ها',medicalHistory:'سوابق پزشکی، داروها و توضیحات',consentText:'رضایت ثبت اطلاعات در نسخه آزمایشی (بدون اطلاعات هویتی واقعی)',cancel:'انصراف',savePatient:'ذخیره پرونده',yes:'بله',no:'خیر'},
 en:{dashboard:'Dashboard',patients:'Patients',imaging:'Imaging & Measurement',reports:'Reports',security:'Security & Backup',workspace:'Clinic workspace',localMode:'Local storage mode',clinicalWorkspace:'CLINICAL WORKSPACE',safetyNotice:'Research prototype. Outputs do not replace professional assessment or diagnosis. Do not enter real patient data.',overview:'OVERVIEW',welcome:'Welcome to',dashboardDesc:'Manage records, clinical assessments and wound progress in one workspace.',newPatient:'New patient',totalPatients:'Total patients',savedOnDevice:'Saved on this device',activeWounds:'Active wounds',acrossRecords:'Across all records',assessments:'Assessments',clinicalEntries:'Clinical entries',followups:'Follow-ups',plannedFollowups:'Follow-up plans',recentPatients:'Recent patients',recentPatientsDesc:'Latest patient records',viewAll:'View all →',noPatients:'No patients registered yet',addFirstPatient:'Create the first record to get started.',quickActions:'Quick actions',quickActionsDesc:'Start a workflow',registerPatient:'Register patient',createPatientRecord:'Create a patient record and history',captureWound:'Wound imaging',cameraOrGallery:'Camera or image upload',exportData:'Export & backup',backupRecords:'Download a data backup',modules:'WoundAI clinical modules',modulesDesc:'Record and assessment structure based on the clinical specification',patientManagement:'Patient & multi-wound records',patientManagementDesc:'Separate records, history, encounters and consent',clinicalForms:'Specialized assessment forms',imageAnalysis:'Imaging & measurement',imageAnalysisDesc:'Camera, calibration and manual boundary tracing',longitudinal:'Longitudinal monitoring & reports',longitudinalDesc:'Assessment history and exportable reports',records:'RECORDS',patientDirectory:'Patient directory',patientDirectoryDesc:'Search and manage patient records.',allRecords:'All records',active:'Active',archived:'Archived',imagingTitle:'Wound imaging & measurement',imagingDesc:'Capture an image, calibrate scale and manually trace the boundary.',imageSource:'Image source',cameraSecure:'Camera access requires HTTPS.',openCamera:'Open camera',chooseImage:'Choose image',switchCamera:'Switch camera',cameraPlaceholder:'Wound image preview',cameraHelp:'Open the camera or choose an image.',cameraIdle:'Camera is not active.',stopCamera:'Stop camera',measurementTools:'Measurement tools',manualOnly:'Manual tracing; clinician confirmation required',calibrationLength:'Reference length (cm)',calibrationPixels:'Same line length in image (pixels)',calibrate:'Set calibration',calibrationNeeded:'Valid calibration is required to calculate cm².',undo:'Undo point',clearDrawing:'Clear drawing',manualArea:'Traced area',drawHint:'Tap several points on the image to trace.',saveImageAssessment:'Save image assessment',depthWarning:'Wound depth cannot be derived from a 2D photo; record it separately using a clinical method.',aiStatusTitle:'AI status',aiStatusBody:'No clinically validated detection or segmentation model is installed in this package. This version does not automatically detect wound boundaries or fabricate results. The architecture reserves an integration point for a validated model and clinician review.',researchOnly:'Research / awaiting validated model',reportsTitle:'Reports & backup',reportsDesc:'Export locally stored data and restore it when needed.',backupTitle:'Download backup',backupDesc:'Patients, wounds, assessments and locally stored images are bundled into one export file.',downloadBackup:'Download JSON backup',restoreTitle:'Restore backup',restoreDesc:'Select a previous backup file. Data will be added to existing records.',summaryTitle:'Record summary',summaryDesc:'Export a patient and wound summary for review and archiving.',downloadCsv:'Download patient CSV',localStorageWarning:'Important storage limitation',localStorageWarningBody:'This prototype stores data only in this browser on this device. Account login, cross-device sync, server-side encryption, real role controls and automatic server backups are not active. A secure backend, compliant hosting, access controls and security testing are required before real patient data can be used.',securityTitle:'Security, privacy & access',securityDesc:'Current status and production requirements',currentPrototype:'Prototype status',localOnly:'Local storage in this browser',manualBackup:'Manual export and restore',noCloudAuth:'Cloud login and authentication',noEncryption:'Server encryption and clinic isolation',productionChecklist:'Before real-world use',secureAuth:'Secure authentication, MFA and account recovery',roleAccess:'Role-based permissions at clinic and record level',encryptedStorage:'Encrypted database and image storage',auditTrail:'Audit events for viewing, creation, editing and deletion',gdprReview:'GDPR / DPIA and applicable medical-device review',backupRestore:'Automated backups and restore testing',footerNote:'Clinical documentation and decision-support system • Prototype',patientProfile:'PATIENT PROFILE',fullName:'Full name',recordCode:'Record code',birthDate:'Date of birth',sex:'Sex',unknown:'Unknown',female:'Female',male:'Male',diabetes:'Diabetes',vascularDisease:'Vascular disease / PAD',allergies:'Allergies',medicalHistory:'Medical history, medications and notes',consentText:'I agree to enter test data in this prototype (no real identifying information)',cancel:'Cancel',savePatient:'Save patient',yes:'Yes',no:'No'}};
@@ -335,7 +346,7 @@ $('#runAnnBtn')?.addEventListener('click',()=>{
  }else toast('پیش‌بینی فقط نمایش داده شد؛ برای اتصال به پرونده، ابتدا زخم را در ارزیابی بالینی انتخاب کنید.');
 });
 refreshAnnStatus();
-$('#exportBackup').onclick=()=>download(`WoundAI-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'WoundAI',version:'2.0',exportedAt:new Date().toISOString(),...state},null,2),'application/json');
+$('#exportBackup').onclick=()=>download(`WoundAI-backup-${new Date().toISOString().slice(0,10)}.json`,JSON.stringify({app:'WoundAI',version:APP_VERSION,exportedAt:new Date().toISOString(),...state},null,2),'application/json');
 $('#importBackup').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let x=JSON.parse(await f.text());if(!Array.isArray(x.patients)||!Array.isArray(x.wounds))throw Error('invalid');for(let k of ['patients','wounds','assessments','images'])if(Array.isArray(x[k]))state[k]=[...state[k],...x[k]];persist();renderPatients();toast(lang==='fa'?'بازیابی انجام شد؛ موارد تکراری را بررسی کنید.':'Restore completed. Check for duplicates.')}catch(err){toast(lang==='fa'?'فایل پشتیبان معتبر نیست.':'Invalid backup file.')}e.target.value=''};
 function download(name,content,type){let a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),2000)}
 $('#exportCsv').onclick=()=>{let rows=[['code','name','dob','sex','diabetes','vascular','created'],...state.patients.map(p=>[p.code,p.name,p.dob,p.sex,p.diabetes,p.vascular,p.created])];let csv='\ufeff'+rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');download('WoundAI-patients.csv',csv,'text/csv;charset=utf-8')};
@@ -997,6 +1008,84 @@ $('#patientForm').onsubmit=e=>{
  toast(existing?'اطلاعات پرونده به‌روزرسانی شد.':'پرونده بیمار ذخیره شد.');
  editingPatientId=null;
 };
+
+// ===== v18.1: guided patient-to-follow-up workflow =====
+// Successful saves advance to the next relevant page and carry the selected
+// patient/wound forward. Users never need to dismiss a dialog to continue.
+const woundaiFlow={patientId:null,woundId:null,enabled:false};
+function woundaiSelectPatientAndWound(){
+ const pid=woundaiFlow.patientId,wid=woundaiFlow.woundId;
+ if(!pid)return;
+ populateImagePatientSelect();
+ if($('#imagePatientSelect')){$('#imagePatientSelect').value=pid;populateImageWoundSelect();}
+ if($('#imageWoundSelect')&&wid)$('#imageWoundSelect').value=wid;
+ if($('#assessmentWound')){refreshAssessmentWounds();$('#assessmentWound').value=wid||'';selectedWoundId=wid||null;syncMeasurementToClinical(wid);}
+ if($('#stage7Patient')){$('#stage7Patient').value=pid;stage7PopulateWounds();if($('#stage7Wound'))$('#stage7Wound').value=wid||'';}
+ if($('#reportPatient')){fillReportPatients();$('#reportPatient').value=pid;$('#reportWound')?.dispatchEvent(new Event('change'));}
+}
+function woundaiAdvance(page,message){
+ woundaiSelectPatientAndWound();
+ goto(page);
+ woundaiSelectPatientAndWound();
+ if(message)toast(message);
+}
+const woundaiPatientSubmitOriginal=$('#patientForm')?.onsubmit;
+if(woundaiPatientSubmitOriginal){
+ $('#patientForm').onsubmit=function(e){
+  const count=state.patients.length;
+  woundaiPatientSubmitOriginal.call(this,e);
+  if(state.patients.length>count){
+   const p=state.patients[state.patients.length-1];
+   woundaiFlow.patientId=p.id;woundaiFlow.woundId=null;woundaiFlow.enabled=true;
+   // The patient form closes itself after a successful save; immediately
+   // continue to wound registration instead of returning to the dashboard.
+   goto('patients');
+   setTimeout(()=>addWound(p.id),80);
+  }
+ };
+}
+const woundaiWoundSubmitOriginal=$('#woundForm')?.onsubmit;
+if(woundaiWoundSubmitOriginal){
+ $('#woundForm').onsubmit=function(e){
+  const count=state.wounds.length;
+  woundaiWoundSubmitOriginal.call(this,e);
+  if(state.wounds.length>count){
+   const w=state.wounds[state.wounds.length-1];
+   woundaiFlow.patientId=w.patientId;woundaiFlow.woundId=w.id;woundaiFlow.enabled=true;
+   woundaiAdvance('imaging','زخم ثبت شد؛ مرحله تصویربرداری باز شد.');
+  }
+ };
+}
+// Image save is async. Advance only if a new image record was actually persisted.
+$('#saveImageRecord')?.addEventListener('click',()=>{
+ const before=state.images.length;
+ setTimeout(()=>{
+  if(state.images.length>before&&woundaiFlow.enabled){
+   woundaiAdvance('clinical','تصویر ذخیره شد؛ اکنون ارزیابی بالینی را تکمیل کنید.');
+  }
+ },250);
+});
+// Advance after a successful clinical assessment save (not on validation errors).
+$('#saveClinical')?.addEventListener('click',()=>{
+ const before=state.assessments.length;
+ setTimeout(()=>{
+  const added=state.assessments.slice(before).some(a=>a.kind==='clinical-assessment'&&a.woundId===woundaiFlow.woundId);
+  if(added&&woundaiFlow.enabled){
+   woundaiAdvance('careplan','ارزیابی ذخیره شد؛ مرحله برنامه مراقبتی باز شد.');
+  }
+ },80);
+});
+// Once a draft or clinician-approved care plan is saved, continue to reports.
+['stage7SaveDraft','stage7Approve'].forEach(id=>{
+ $('#'+id)?.addEventListener('click',()=>{
+  const before=state.assessments.length;
+  setTimeout(()=>{
+   const added=state.assessments.length>before;
+   if(added&&woundaiFlow.enabled)woundaiAdvance('reports','برنامه مراقبتی ذخیره شد؛ گزارش پرونده آماده است.');
+  },100);
+ });
+});
+
 function viewPatientRecord(patientId){
  const p=state.patients.find(x=>x.id===patientId);if(!p)return;
  const wounds=state.wounds.filter(w=>w.patientId===p.id);
