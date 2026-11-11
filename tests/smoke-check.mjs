@@ -26,7 +26,7 @@ for (const file of ['styles.css','app.js','manifest.webmanifest','sw.js','assets
 assert.ok(manifest.name && manifest.start_url && manifest.display, 'PWA manifest incomplete');
 assert.ok(manifest.icons?.some(x => x.sizes === '192x192'), '192px PWA icon missing');
 assert.ok(manifest.icons?.some(x => x.sizes === '512x512'), '512px PWA icon missing');
-assert.match(sw, /woundai-release-v17/, 'Service worker cache version not bumped');
+assert.match(sw, /woundai-release-v18/, 'Service worker cache version not bumped');
 assert.match(sw, /request\.method !== 'GET'/, 'Service worker should ignore non-GET requests');
 assert.match(js, /WoundAI-Encrypted-Backup-v1/, 'Encrypted backup import/export missing');
 assert.match(js, /function trainANN/, 'ANN training implementation missing');
@@ -54,3 +54,21 @@ assert.ok(guidelineRegistry.guidelines.some(g => g.id === 'NPIAP-EPUAP-PPPIA-202
 new vm.Script(js, { filename: 'app.js' });
 new vm.Script(sw, { filename: 'sw.js' });
 console.log(`WoundAI smoke checks passed (${ids.length} unique DOM ids, 9 core pages).`);
+
+assert.match(html, /id=["']startupScreen["']/, 'Branded startup screen missing');
+assert.match(html, /woundai-logo-horizontal\.png/, 'Approved horizontal logo missing from startup');
+assert.match(html, /تهیه و تنظیم: دکتر آزاده کریمی/, 'Persian author credit missing');
+assert.match(html, /Azadeh karimy/, 'English author credit missing');
+assert.match(html, /WoundAI • Pro Web v18\.1/, 'Sidebar version not updated');
+assert.match(sw, /woundai-release-v18/, 'Service worker cache not updated');
+assert.ok(manifest.icons.every(x => x.src.includes('woundai-icon-')), 'PWA icons must use the approved derived icon files');
+
+assert.match(html, /src=["']assets\/woundai-logo-square\.png["']/, 'Topbar must use approved square logo');
+assert.match(sw, /assets\/icon\.svg/, 'Official SVG icon must be precached');
+
+assert.match(js, /guided patient-to-follow-up workflow/, 'Guided workflow coordinator missing');
+assert.match(js, /woundaiAdvance\('imaging'/, 'Wound save must advance to imaging');
+assert.match(js, /woundaiAdvance\('clinical'/, 'Image save must advance to clinical assessment');
+assert.match(js, /woundaiAdvance\('careplan'/, 'Clinical save must advance to care plan');
+assert.match(js, /woundaiAdvance\('reports'/, 'Care plan save must advance to reports');
+assert.match(html, /workflowRibbon/, 'Workflow progress ribbon missing');
