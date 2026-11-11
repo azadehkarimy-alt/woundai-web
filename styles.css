@@ -461,3 +461,22 @@ footer,.micro-note,.muted,small{color:var(--wound-muted)}
 .workflow-ribbon{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:center;gap:clamp(5px,1.5vw,16px);flex-wrap:wrap;padding:10px 14px;background:rgba(234,248,247,.96);border-bottom:1px solid #D5E9E7;color:#092C4C;font-size:12px;font-weight:800;backdrop-filter:blur(12px)}
 .workflow-ribbon span{white-space:nowrap}
 .workflow-ribbon i{font-style:normal;color:#13BDB5}
+
+/* v19.1: Persian-only mobile patient layout and scrolling correction */
+@media(max-width:760px){
+ html[lang="fa"],html[lang="fa"] body{width:100%;max-width:100%;overflow-x:clip;overflow-y:auto}
+ html[lang="fa"] .app-shell,html[lang="fa"] .main-area{min-width:0;max-width:100%;width:100%;margin-inline:0}
+ html[lang="fa"] .main-area{padding-inline:12px;overflow-x:clip}
+ html[lang="fa"] .sidebar:not(.open){transform:translateX(110%);pointer-events:none}
+ html[lang="fa"] .sidebar.open{max-width:min(275px,85vw);overflow-y:auto;overscroll-behavior:contain}
+ html[lang="fa"] .page,html[lang="fa"] .panel,html[lang="fa"] .patient-card{min-width:0;max-width:100%}
+ html[lang="fa"] .patient-grid{grid-template-columns:minmax(0,1fr)}
+ html[lang="fa"] .card-actions{flex-wrap:wrap}
+ html[lang="fa"] .card-actions button{flex:1 1 42%;min-width:0;white-space:normal}
+ html[lang="fa"] .patient-detail-overlay{inset:0;padding:0;align-items:stretch;overflow-y:auto;overscroll-behavior:contain}
+ html[lang="fa"] .patient-detail-panel{width:100%;max-width:100%;max-height:none;min-height:100dvh;border-radius:0;overflow:visible;padding:18px 14px 40px;overflow-wrap:anywhere}
+ html[lang="fa"] .patient-detail-panel .modal-actions{flex-wrap:wrap}
+ html[lang="fa"] .patient-detail-panel .modal-actions button{flex:1 1 42%;min-width:0}
+}
+/* Respect the hidden attribute on the Persian-only delete controls. */
+button[hidden]{display:none!important}

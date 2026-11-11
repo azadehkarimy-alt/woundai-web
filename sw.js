@@ -1,4 +1,4 @@
-const CACHE_NAME = 'woundai-release-v18-1';
+const CACHE_NAME = 'woundai-release-v19-1';
 const CORE_ASSETS = [
   './',
   './index.html',
