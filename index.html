@@ -13,7 +13,7 @@
     <img class="startup-logo" src="assets/woundai-logo-horizontal.png" alt="WoundAI — Intelligent Wound Management System">
     <div class="startup-divider"></div>
     <p class="startup-kicker" id="startupTitle">سامانه هوشمند مدیریت زخم</p>
-    <p class="startup-version" dir="ltr">WoundAI • Version 19.1</p>
+    <p class="startup-version" dir="ltr">WoundAI • Version 20</p>
     <div class="startup-credit">
       <strong>تهیه و تنظیم: دکتر آزاده کریمی</strong>
       <span dir="ltr">Prepared and curated by Dr. Azadeh karimy</span>
@@ -39,7 +39,7 @@
       <button class="nav-item" data-page="finaltest"><span>✓</span><b>آزمایش نهایی و نصب</b></button>
       <button class="nav-item" data-page="security"><span>♧</span><b data-i18n="security">امنیت و پشتیبان‌گیری</b></button>
     </nav>
-    <div class="sidebar-bottom"><div class="local-status"><i></i><span data-i18n="localMode">حالت ذخیره‌سازی محلی</span></div><small>WoundAI • Pro Web v19.1</small></div>
+    <div class="sidebar-bottom"><div class="local-status"><i></i><span data-i18n="localMode">حالت ذخیره‌سازی محلی</span></div><small>WoundAI • Pro Web v20</small></div>
   </aside>
   <main class="main-area">
 <div class="workflow-ribbon" id="workflowRibbon" aria-label="مراحل گردش کار">
@@ -230,7 +230,47 @@
 
 <div class="modal-backdrop" id="woundModalBackdrop" hidden><section class="modal" role="dialog" aria-modal="true" aria-labelledby="woundModalTitle"><div class="modal-head"><div><p class="eyebrow teal">WOUND PROFILE</p><h2 id="woundModalTitle">ثبت زخم جدید</h2><small class="muted">هر زخم شناسه مستقل و تاریخچه جداگانه دارد.</small></div><button class="icon-btn" id="closeWoundModal" type="button">×</button></div>
 <form id="woundForm"><input type="hidden" id="wPatientId"><div class="field"><label for="wEtiology">نوع / علت زخم</label><select id="wEtiology" required><option value="diabetic">پای دیابتی</option><option value="pressure">آسیب فشاری</option><option value="venous">وریدی</option><option value="arterial">شریانی</option><option value="surgical">جراحی</option><option value="traumatic">تروماتیک</option><option value="burn">سوختگی</option><option value="mixed">مختلط</option><option value="unknown">نامشخص</option></select></div>
-<div class="anatomy-picker"><div class="panel-head"><div><h3>نقشه آناتومیک بدن</h3><p>محل تقریبی زخم را انتخاب کنید؛ سپس محل دقیق را بنویسید.</p></div><span class="pill">BODY MAP</span></div><div class="bodymap-pair" aria-label="نقشه شماتیک بدن از جلو و پشت"><div class="bodymap-card"><b>نمای جلو</b><svg viewBox="0 0 150 270" role="group" aria-label="نمای جلویی بدن"><circle cx="75" cy="25" r="17" fill="#d7e8ed" stroke="#0b3b5e" stroke-width="2"/><path d="M56 48 Q75 40 94 48 L105 105 L94 130 L89 174 L84 250 L68 250 L63 174 L58 130 L45 105 Z" fill="#d7e8ed" stroke="#0b3b5e" stroke-width="2"/><path d="M48 55 L25 128 L15 184 L27 187 L48 127 M102 55 L125 128 L135 184 L123 187 L102 127" fill="none" stroke="#0b3b5e" stroke-width="12" stroke-linecap="round"/><g class="bodymap-dot" data-body-region="قفسه سینه" role="button" tabindex="0"><circle cx="75" cy="88" r="9"/><text x="75" y="91">۱</text></g><g class="bodymap-dot" data-body-region="شکم" role="button" tabindex="0"><circle cx="75" cy="119" r="9"/><text x="75" y="122">۲</text></g><g class="bodymap-dot" data-body-region="لگن و باسن" role="button" tabindex="0"><circle cx="75" cy="148" r="9"/><text x="75" y="151">۳</text></g><g class="bodymap-dot" data-body-region="اندام فوقانی راست" role="button" tabindex="0"><circle cx="27" cy="145" r="9"/><text x="27" y="148">۴</text></g><g class="bodymap-dot" data-body-region="اندام فوقانی چپ" role="button" tabindex="0"><circle cx="123" cy="145" r="9"/><text x="123" y="148">۵</text></g><g class="bodymap-dot" data-body-region="ران راست" role="button" tabindex="0"><circle cx="62" cy="184" r="9"/><text x="62" y="187">۶</text></g><g class="bodymap-dot" data-body-region="ران چپ" role="button" tabindex="0"><circle cx="88" cy="184" r="9"/><text x="88" y="187">۷</text></g></svg></div><div class="bodymap-card"><b>نمای پشت</b><svg viewBox="0 0 150 270" role="group" aria-label="نمای پشتی بدن"><circle cx="75" cy="25" r="17" fill="#d7e8ed" stroke="#0b3b5e" stroke-width="2"/><path d="M56 48 Q75 40 94 48 L105 105 L94 130 L89 174 L84 250 L68 250 L63 174 L58 130 L45 105 Z" fill="#d7e8ed" stroke="#0b3b5e" stroke-width="2"/><path d="M48 55 L25 128 L15 184 L27 187 L48 127 M102 55 L125 128 L135 184 L123 187 L102 127" fill="none" stroke="#0b3b5e" stroke-width="12" stroke-linecap="round"/><g class="bodymap-dot" data-body-region="پشت و کتف" role="button" tabindex="0"><circle cx="75" cy="83" r="9"/><text x="75" y="86">۸</text></g><g class="bodymap-dot" data-body-region="ناحیه کمری و خاجی" role="button" tabindex="0"><circle cx="75" cy="125" r="9"/><text x="75" y="128">۹</text></g><g class="bodymap-dot" data-body-region="باسن" role="button" tabindex="0"><circle cx="75" cy="153" r="9"/><text x="75" y="156">۱۰</text></g><g class="bodymap-dot" data-body-region="ساق راست" role="button" tabindex="0"><circle cx="62" cy="207" r="9"/><text x="62" y="210">۱۱</text></g><g class="bodymap-dot" data-body-region="ساق چپ" role="button" tabindex="0"><circle cx="88" cy="207" r="9"/><text x="88" y="210">۱۲</text></g><g class="bodymap-dot" data-body-region="پاشنه و پا" role="button" tabindex="0"><circle cx="75" cy="246" r="9"/><text x="75" y="249">۱۳</text></g></svg></div></div><div class="anatomy-regions" role="group" aria-label="انتخاب ناحیه بدن"> <button type="button" data-body-region="سر و گردن">سر و گردن</button><button type="button" data-body-region="قفسه سینه">قفسه سینه</button><button type="button" data-body-region="شکم">شکم</button><button type="button" data-body-region="لگن و باسن">لگن و باسن</button><button type="button" data-body-region="اندام فوقانی راست">بازوی راست</button><button type="button" data-body-region="اندام فوقانی چپ">بازوی چپ</button><button type="button" data-body-region="ران راست">ران راست</button><button type="button" data-body-region="ران چپ">ران چپ</button><button type="button" data-body-region="ساق راست">ساق راست</button><button type="button" data-body-region="ساق چپ">ساق چپ</button><button type="button" data-body-region="پاشنه راست">پاشنه راست</button><button type="button" data-body-region="پاشنه چپ">پاشنه چپ</button><button type="button" data-body-region="پا / انگشتان راست">پا و انگشتان راست</button><button type="button" data-body-region="پا / انگشتان چپ">پا و انگشتان چپ</button></div><input type="hidden" id="wBodyRegion"><div class="selected-region" id="selectedBodyRegion">هنوز ناحیه‌ای انتخاب نشده است.</div></div>
+<div class="anatomy-picker">
+<div class="panel-head"><div><h3>نقشه آناتومیک بدن</h3><p>برای تعیین محل زخم، نقطه متناظر را روی نمای جلو یا پشت لمس کنید؛ سپس محل دقیق را تکمیل کنید.</p></div><span class="pill">BODY MAP</span></div>
+<div class="bodymap-pair" aria-label="نقشه آناتومیک بدن از جلو و پشت">
+  <div class="bodymap-card"><b>نمای جلو</b><div class="bodymap-figure">
+    <img src="assets/body-front-v20.png" alt="نمای جلویی بدن برای انتخاب محل زخم">
+    <button type="button" class="bodymap-point" style="--x:50%;--y:16%" data-body-region="سر و گردن" aria-label="سر و گردن"></button>
+    <button type="button" class="bodymap-point" style="--x:33%;--y:25%" data-body-region="قفسه سینه راست" aria-label="قفسه سینه راست"></button>
+    <button type="button" class="bodymap-point" style="--x:67%;--y:25%" data-body-region="قفسه سینه چپ" aria-label="قفسه سینه چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:50%;--y:39%" data-body-region="شکم" aria-label="شکم"></button>
+    <button type="button" class="bodymap-point" style="--x:18%;--y:36%" data-body-region="بازوی راست" aria-label="بازوی راست"></button>
+    <button type="button" class="bodymap-point" style="--x:82%;--y:36%" data-body-region="بازوی چپ" aria-label="بازوی چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:15%;--y:49%" data-body-region="ساعد راست" aria-label="ساعد راست"></button>
+    <button type="button" class="bodymap-point" style="--x:85%;--y:49%" data-body-region="ساعد چپ" aria-label="ساعد چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:38%;--y:61%" data-body-region="لگن راست" aria-label="لگن راست"></button>
+    <button type="button" class="bodymap-point" style="--x:62%;--y:61%" data-body-region="لگن چپ" aria-label="لگن چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:35%;--y:72%" data-body-region="ران راست" aria-label="ران راست"></button>
+    <button type="button" class="bodymap-point" style="--x:65%;--y:72%" data-body-region="ران چپ" aria-label="ران چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:35%;--y:83%" data-body-region="ساق راست" aria-label="ساق راست"></button>
+    <button type="button" class="bodymap-point" style="--x:65%;--y:83%" data-body-region="ساق چپ" aria-label="ساق چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:36%;--y:97%" data-body-region="پا و انگشتان راست" aria-label="پا و انگشتان راست"></button>
+    <button type="button" class="bodymap-point" style="--x:64%;--y:97%" data-body-region="پا و انگشتان چپ" aria-label="پا و انگشتان چپ"></button>
+  </div></div>
+  <div class="bodymap-card"><b>نمای پشت</b><div class="bodymap-figure">
+    <img src="assets/body-back-v20.png" alt="نمای پشتی بدن برای انتخاب محل زخم">
+    <button type="button" class="bodymap-point" style="--x:50%;--y:14%" data-body-region="پشت گردن" aria-label="پشت گردن"></button>
+    <button type="button" class="bodymap-point" style="--x:50%;--y:27%" data-body-region="پشت و کتف" aria-label="پشت و کتف"></button>
+    <button type="button" class="bodymap-point" style="--x:50%;--y:42%" data-body-region="ناحیه کمری" aria-label="ناحیه کمری"></button>
+    <button type="button" class="bodymap-point" style="--x:17%;--y:36%" data-body-region="بازوی راست از پشت" aria-label="بازوی راست از پشت"></button>
+    <button type="button" class="bodymap-point" style="--x:83%;--y:36%" data-body-region="بازوی چپ از پشت" aria-label="بازوی چپ از پشت"></button>
+    <button type="button" class="bodymap-point" style="--x:50%;--y:52%" data-body-region="خاجی و دنبالچه" aria-label="خاجی و دنبالچه"></button>
+    <button type="button" class="bodymap-point" style="--x:35%;--y:64%" data-body-region="پشت ران راست" aria-label="پشت ران راست"></button>
+    <button type="button" class="bodymap-point" style="--x:65%;--y:64%" data-body-region="پشت ران چپ" aria-label="پشت ران چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:35%;--y:83%" data-body-region="پشت ساق راست" aria-label="پشت ساق راست"></button>
+    <button type="button" class="bodymap-point" style="--x:65%;--y:83%" data-body-region="پشت ساق چپ" aria-label="پشت ساق چپ"></button>
+    <button type="button" class="bodymap-point" style="--x:36%;--y:97%" data-body-region="پاشنه راست" aria-label="پاشنه راست"></button>
+    <button type="button" class="bodymap-point" style="--x:64%;--y:97%" data-body-region="پاشنه چپ" aria-label="پاشنه چپ"></button>
+  </div></div>
+</div>
+<div class="anatomy-regions" role="group" aria-label="انتخاب ناحیه بدن">
+<button type="button" data-body-region="سر و گردن">سر و گردن</button><button type="button" data-body-region="قفسه سینه">قفسه سینه</button><button type="button" data-body-region="شکم">شکم</button><button type="button" data-body-region="لگن و باسن">لگن و باسن</button><button type="button" data-body-region="بازوی راست">بازوی راست</button><button type="button" data-body-region="بازوی چپ">بازوی چپ</button><button type="button" data-body-region="ران راست">ران راست</button><button type="button" data-body-region="ران چپ">ران چپ</button><button type="button" data-body-region="ساق راست">ساق راست</button><button type="button" data-body-region="ساق چپ">ساق چپ</button><button type="button" data-body-region="پاشنه راست">پاشنه راست</button><button type="button" data-body-region="پاشنه چپ">پاشنه چپ</button>
+</div><input type="hidden" id="wBodyRegion"><div class="selected-region" id="selectedBodyRegion" aria-live="polite">هنوز ناحیه‌ای انتخاب نشده است.</div></div>
 <div class="form-grid"><div class="field"><label for="wSide">سمت بدن</label><select id="wSide"><option value="نامشخص">نامشخص</option><option value="راست">راست</option><option value="چپ">چپ</option><option value="دوطرفه">دوطرفه</option><option value="مرکزی">مرکزی</option></select></div><div class="field"><label for="wSite">محل دقیق / نشانه آناتومیک</label><input id="wSite" required placeholder="مثلاً پاشنه، سطح خلفی، ناحیه خارجی"></div><div class="field"><label for="wOnset">تاریخ شروع زخم</label><input id="wOnset" type="date"></div><div class="field"><label for="wNotes">توضیحات اولیه</label><input id="wNotes" placeholder="علت احتمالی، سابقه یا نکته مهم"></div></div><div class="modal-actions"><button type="button" class="secondary-btn" id="cancelWound">انصراف</button><button type="submit" class="primary-btn">ذخیره زخم و ایجاد شناسه</button></div></form></section></div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>

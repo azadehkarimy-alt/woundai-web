@@ -67,6 +67,35 @@ $('#newPatientBtn').onclick=openModal;$('#addPatientBtn').onclick=openModal;$('#
 
 function renderPatients(){let q=$('#patientSearch').value.toLowerCase(),f=$('#patientFilter').value;let arr=state.patients.filter(p=>(f==='all'||p.status===f)&&(`${p.name} ${p.code}`.toLowerCase().includes(q)));$('#patientList').innerHTML=arr.length?arr.map(p=>{let wounds=state.wounds.filter(w=>w.patientId===p.id);return `<article class="patient-card"><div class="patient-card-head"><span class="patient-initial patient-avatar">${p.photo?`<img src="${p.photo}" alt="عکس بیمار">`:esc(p.name.slice(0,1))}</span><span class="pill">${p.status==='active'?(lang==='fa'?'فعال':'ACTIVE'):(lang==='fa'?'بایگانی':'ARCHIVED')}</span></div><h3>${esc(p.name)}</h3><p>${lang==='fa'?'کد پرونده':'Record'}: ${esc(p.code)}</p><div class="patient-meta"><span>${wounds.length} ${lang==='fa'?'زخم':'wounds'}</span><span>${lang==='fa'?'ثبت':'Created'}: ${new Date(p.created).toLocaleDateString(lang==='fa'?'fa-IR':'en-US')}</span></div><div class="card-actions"><button class="secondary-btn" data-view-patient="${p.id}">مشاهده پرونده</button><button class="secondary-btn" data-edit-patient="${p.id}">ویرایش</button><button class="secondary-btn" data-add-wound="${p.id}">${lang==='fa'?'＋ افزودن زخم':'＋ Add wound'}</button><button class="secondary-btn" data-delete-patient="${p.id}" ${lang==='fa'?'':'hidden'}>حذف بیمار</button><button class="secondary-btn" data-archive="${p.id}">${p.status==='active'?(lang==='fa'?'بایگانی':'Archive'):(lang==='fa'?'فعال‌سازی':'Activate')}</button></div><div class="wound-list">${wounds.map(w=>`<div class="wound-row"><span>◉ ${esc(w.etiology)} · ${esc(w.site)}</span><button class="text-btn" data-assess="${w.id}">${lang==='fa'?'ارزیابی':'Assess'} ←</button></div>`).join('')}</div></article>`}).join(''):`<div class="panel empty-state"><b>${lang==='fa'?'پرونده‌ای یافت نشد':'No records found'}</b><small>${lang==='fa'?'جست‌وجو را تغییر دهید یا بیمار جدید ثبت کنید.':'Change your search or add a patient.'}</small></div>`;}
 $('#patientSearch').oninput=renderPatients;$('#patientFilter').onchange=renderPatients;
+
+// v20: interactive anatomical body map (front and back).
+function selectWoundBodyRegion(region, source){
+ const hidden=document.getElementById('wBodyRegion');
+ const display=document.getElementById('selectedBodyRegion');
+ const site=document.getElementById('wSite');
+ if(hidden)hidden.value=region;
+ if(display)display.textContent=region?'محل انتخاب‌شده: '+region:'هنوز ناحیه‌ای انتخاب نشده است.';
+ if(site){site.value=region;site.dispatchEvent(new Event('input',{bubbles:true}));}
+ document.querySelectorAll('#woundModalBackdrop [data-body-region]').forEach(el=>{
+   const selected=el.dataset.bodyRegion===region;
+   el.classList.toggle('selected',selected);
+   if(el.tagName==='BUTTON')el.setAttribute('aria-pressed',selected?'true':'false');
+   else el.classList.toggle('selected',selected);
+ });
+}
+document.getElementById('woundModalBackdrop')?.addEventListener('click',e=>{
+ const target=e.target.closest('[data-body-region]');
+ if(!target)return;
+ e.preventDefault();
+ selectWoundBodyRegion(target.dataset.bodyRegion,target);
+});
+document.getElementById('woundModalBackdrop')?.addEventListener('keydown',e=>{
+ const target=e.target.closest('[data-body-region]');
+ if(target&&(e.key==='Enter'||e.key===' ')){
+   e.preventDefault();selectWoundBodyRegion(target.dataset.bodyRegion,target);
+ }
+});
+
 function addWound(patientId){let et=prompt(lang==='fa'?'نوع زخم (دیابتی، فشاری، وریدی، شریانی، جراحی، تروماتیک، سوختگی، مختلط یا نامشخص):':'Wound type (diabetic, pressure, venous, arterial, surgical, traumatic, burn, mixed, unknown):','diabetic');if(et===null)return;let site=prompt(lang==='fa'?'محل دقیق زخم و سمت بدن:':'Exact anatomical site and laterality:','');if(site===null)return;let w={id:id(),patientId,etiology:et,site,onset:'',status:'active',created:new Date().toISOString(),followup:''};state.wounds.push(w);persist();renderPatients();toast(lang==='fa'?'زخم به پرونده افزوده شد.':'Wound added to patient.');}
 document.addEventListener('click',e=>{let a=e.target.closest('[data-page]');if(a)goto(a.dataset.page);let g=e.target.closest('[data-goto]');if(g)goto(g.dataset.goto);let o=e.target.closest('[data-open-patient]');if(o){let p=state.patients.find(x=>x.id===o.dataset.openPatient);toast(`${p.name} · ${p.code}`)}let aw=e.target.closest('[data-add-wound]');if(aw)addWound(aw.dataset.addWound);let ar=e.target.closest('[data-archive]');if(ar){let p=state.patients.find(x=>x.id===ar.dataset.archive);p.status=p.status==='active'?'archived':'active';persist();renderPatients()}let as=e.target.closest('[data-assess]');if(as){goto('imaging');toast(lang==='fa'?'زخم انتخاب شد؛ تصویر را ثبت و ارزیابی را ذخیره کنید.':'Wound selected. Capture an image and save assessment.')}});
 $$('[data-goto]').forEach(b=>b.addEventListener('click',()=>goto(b.dataset.goto)));$('#menuBtn').onclick=()=>$('#sidebar').classList.toggle('open');$('#langBtn').onclick=()=>{lang=lang==='fa'?'en':'fa';applyLang();renderStats();if(currentPage==='patients')renderPatients()};
@@ -484,8 +513,8 @@ const oldApplyLang=applyLang;applyLang=function(){oldApplyLang();if($('#assessme
 // Removed legacy image reassignment handler: saved image ownership must never be changed implicitly.
 // Additional etiology-specific classification inputs are recorded independently; composite WIfI stage is intentionally not inferred here.
 // Structured wound registration dialog (replaces browser prompt workflow).
-function addWound(patientId){$('#wPatientId').value=patientId;$('#woundModalBackdrop').hidden=false;$('#wSite').focus()}
-function closeWoundModal(){$('#woundModalBackdrop').hidden=true;$('#woundForm').reset()}
+function addWound(patientId){$('#wPatientId').value=patientId;$('#woundModalBackdrop').hidden=false;selectWoundBodyRegion('','');$('#wSite').value='';$('#wSite').focus()}
+function closeWoundModal(){$('#woundModalBackdrop').hidden=true;$('#woundForm').reset();selectWoundBodyRegion('','')}
 $('#closeWoundModal').onclick=closeWoundModal;$('#cancelWound').onclick=closeWoundModal;$('#woundModalBackdrop').addEventListener('click',e=>{if(e.target.id==='woundModalBackdrop')closeWoundModal()});
 $('#woundForm').onsubmit=e=>{e.preventDefault();let patientId=$('#wPatientId').value,site=$('#wSite').value.trim();if(!patientId||!site)return;const patient=state.patients.find(p=>p.id===patientId);if(!patient){toast('بیمار مرتبط با این زخم پیدا نشد.');return}const wound={id:id(),patientId,etiology:$('#wEtiology').value,site:site+' ('+$('#wSide').value+')',side:$('#wSide').value,onset:$('#wOnset').value,notes:$('#wNotes').value,status:'active',created:new Date().toISOString(),followup:''};state.wounds.push(wound);if(!persist()){state.wounds.pop();return}closeWoundModal();renderPatients();refreshAssessmentWounds();populateImagePatientSelect();toast(lang==='fa'?'زخم جدید ذخیره شد.':'New wound saved.')};
 const optionEn={'دیابتی':'Diabetic foot','فشاری':'Pressure injury','وریدی':'Venous','شریانی':'Arterial','جراحی':'Surgical','تروماتیک':'Traumatic','سوختگی':'Burn','مختلط':'Mixed','نامشخص':'Unknown','بدون':'None','کم':'Low','متوسط':'Moderate','زیاد':'High','سروزی':'Serous','خونی':'Bloody','چرکی':'Purulent','مختلط':'Mixed','کاربرد ندارد / نامشخص':'N/A / Unknown','غیرعفونی':'Uninfected','خفیف':'Mild','شدید':'Severe','انتخاب نشده':'Not selected','Forefoot':'Forefoot','Midfoot / hindfoot':'Midfoot / hindfoot','نامشخص / کاربرد ندارد':'Unknown / N/A','راست':'Right','چپ':'Left','دوطرفه':'Bilateral','A — بدون عفونت/ایسکمی':'A — no infection/ischemia','B — عفونت':'B — infection','C — ایسکمی':'C — ischemia','D — عفونت و ایسکمی':'D — infection and ischemia','پای دیابتی':'Diabetic foot'};

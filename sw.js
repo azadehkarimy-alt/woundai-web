@@ -1,4 +1,4 @@
-const CACHE_NAME = 'woundai-release-v19-1';
+const CACHE_NAME = 'woundai-release-v20';
 const CORE_ASSETS = [
   './',
   './index.html',
@@ -11,7 +11,9 @@ const CORE_ASSETS = [
   './icon.svg',
   './assets/woundai-logo.png',
   './assets/woundai-logo-horizontal.png',
-  './assets/woundai-logo-square.png'
+  './assets/woundai-logo-square.png',
+  './assets/body-front-v20.png',
+  './assets/body-back-v20.png',
 ];
 
 self.addEventListener('install', event => {
