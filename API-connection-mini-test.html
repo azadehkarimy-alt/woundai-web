@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https: http://localhost:8000 http://127.0.0.1:8000; object-src 'none'; base-uri 'self'">
+<title>WoundAI 30.2 | آزمون اتصال API</title>
+<style>body{font:16px Tahoma,Arial,sans-serif;background:#eaf8f7;color:#092c4c;margin:0;padding:24px}main{max-width:620px;margin:auto;background:white;padding:24px;border-radius:16px}input,button{box-sizing:border-box;width:100%;padding:14px;margin:8px 0;border-radius:9px;border:1px solid #b4d3d2}button{background:#087e83;color:white;cursor:pointer}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f7f7;padding:12px;border-radius:8px}small{line-height:2;display:block}</style>
+</head><body><main>
+<h1>WoundAI Version 30.7</h1><h2>آزمون اتصال API</h2>
+<p>این صفحه و صفحه اصلی از یک کد مشترک برای بررسی سلامت سرور استفاده می‌کنند؛ هیچ تصویر یا اطلاعات بیماری ارسال نمی‌شود.</p>
+<label for="tissueApiUrl">نشانی سرور API</label>
+<input id="tissueApiUrl" type="url" placeholder="https://api.example.org یا http://127.0.0.1:8000" autocomplete="off">
+<button id="tissueApiCheck" type="button">بررسی اتصال و وضعیت مدل</button>
+<p id="tissueApiStatus" role="status" aria-live="polite">آماده آزمون؛ هنوز به سروری متصل نشده است.</p>
+<pre id="tissueApiDetails" aria-live="polite">هیچ داده بیماری ارسال نمی‌شود.</pre>
+<small>موفقیت اتصال به معنای فعال بودن مدل یا تأیید دقت بالینی نیست. API پژوهشی فعلی عمداً بدون مدل معتبر، تحلیل تصویر را غیرفعال نگه می‌دارد.</small>
+</main><script src="api-config.js" defer></script><script src="tissue-api-v30.js" defer></script></body></html>

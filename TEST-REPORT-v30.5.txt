@@ -1,0 +1,38 @@
+# گزارش آزمون WoundAI v30.5
+
+تاریخ: ۱۴ نوامبر ۲۰۲۶  
+مبنای آزمون: کپی مستقل از WoundAI v30.4
+
+## نتایج واقعی آزمون‌ها
+
+| آزمون | نتیجه | جزئیات |
+|---|---|---|
+| `node --check app.js` | PASS | بدون خطای نحوی |
+| `node --check tissue-api-v30.js` | PASS | بدون خطای نحوی |
+| `node --check supabase-client-v30.js` | PASS | بدون خطای نحوی |
+| `node --check clinical-validation-v30.js` | PASS | بدون خطای نحوی |
+| `node --check sw.js` | PASS | بدون خطای نحوی |
+| `node tests/smoke-check.mjs` | PASS | ۳۰۹ شناسه یکتا، ۱۴ صفحه اصلی، نسخه/cache و کنترل‌های امنیتی |
+| `node tests/supabase-client-check.mjs` | PASS | تنظیمات، رد کلید محرمانه، نشست، access-token accessor، REST و خروج |
+| `node tests/clinical-validation-check.mjs` | PASS | ۱۰ assertion |
+| `node tests/tissue-api-client-check.mjs` | PASS | health gating، رضایت، Bearer token و نمایش پژوهشی |
+| `python -m pytest -q research-tissue-api -p no:cacheprovider` | PASS | ۲۰ تست API و adapter |
+
+## پوشش امنیتی API
+- درخواست بدون Bearer token رد می‌شود.
+- توکن به سرویس Supabase Auth فرستاده می‌شود تا نشست اعتبارسنجی شود.
+- نبود تنظیمات سرور fail-closed است.
+- محدودیت نرخ با پاسخ 429 آزمایش شد.
+- origin غیرمجاز در CORS رد می‌شود.
+- EXIF تصویر قبل از پردازش حذف می‌شود.
+- خروجی مدل همچنان research-only باقی می‌ماند.
+
+## محدودیت‌های آزمون
+- Supabase Auth در تست خودکار با mock بررسی می‌شود؛ اتصال staging واقعی انجام نشده است.
+- Migration جدید فقط به‌صورت ایستا بررسی شده؛ `psql`/Supabase CLI در محیط اجرا موجود نبود و migration روی PostgreSQL واقعی اجرا نشده است.
+- rate limiter درون‌پردازه‌ای است و جایگزین محدودیت توزیع‌شده نیست.
+- هیچ مدل AI واقعی در این بسته نصب نشده است.
+- تست موبایل/دسکتاپ واقعی، آزمون نفوذ و اعتبارسنجی بالینی انجام نشده است.
+
+## نتیجه
+تمام آزمون‌های خودکار اجراشده موفق‌اند. این نتیجه صحت مسیرهای نرم‌افزاری و تست‌های شبیه‌سازی‌شده را نشان می‌دهد؛ نه استقرار موفق migration، اتصال واقعی Supabase یا تأیید استفاده بالینی.

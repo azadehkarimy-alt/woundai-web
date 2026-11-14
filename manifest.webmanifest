@@ -1,7 +1,7 @@
 {
-  "name": "WoundAI V25 | Intelligent Wound Management System",
-  "short_name": "WoundAI V25",
-  "description": "سامانه هوشمند مستندسازی و مدیریت زخم",
+  "name": "WoundAI V30.8 | Intelligent Wound Management System",
+  "short_name": "WoundAI V30.8",
+  "description": "سامانه مدیریت زخم با همگام‌سازی دوطرفه بالینی و حل تعارض",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

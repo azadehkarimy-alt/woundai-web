@@ -1,0 +1,47 @@
+# گزارش آزمون WoundAI v30.6
+
+تاریخ: ۱۴ نوامبر ۲۰۲۶  
+مبنای آزمون: بسته WoundAI v30.5 استخراج‌شده در فضای کاری مستقل
+
+## نتایج آزمون‌های خودکار
+
+| آزمون | نتیجه | جزئیات |
+|---|---|---|
+| `node --check app.js` | PASS | بدون خطای نحوی |
+| `node --check tissue-api-v30.js` | PASS | بدون خطای نحوی |
+| `node --check supabase-client-v30.js` | PASS | بدون خطای نحوی |
+| `node --check supabase-ui-v30.js` | PASS | بدون خطای نحوی |
+| `node --check cloud-sync-v30.js` | PASS | بدون خطای نحوی |
+| `node --check clinical-validation-v30.js` | PASS | بدون خطای نحوی |
+| `node --check sw.js` | PASS | بدون خطای نحوی |
+| `node tests/smoke-check.mjs` | PASS | ۳۱۴ شناسه یکتا، ۱۴ صفحه اصلی، نسخه و migration checks |
+| `node tests/supabase-client-check.mjs` | PASS | تنظیمات، نشست، توکن، AAL2، REST و اعتبارسنجی مسیر Storage |
+| `node tests/clinical-validation-check.mjs` | PASS | ۱۰ assertion |
+| `node tests/tissue-api-client-check.mjs` | PASS | سلامت API، رضایت و Bearer token |
+| `node tests/cloud-sync-check.mjs` | PASS | رضایت، تعارض کد، شناسه‌های مرکز-محور، انتقال، Storage و حفظ local |
+| `cloud-sync-merge-check` | PASS | دریافت cloud، بازیابی تصویر، ادغام رکورد جدید و حفظ رکورد محلی همسان |
+| `python -m pytest -q research-tissue-api -p no:cacheprovider` | PASS | ۲۰ تست API و model adapter |
+| Service Worker precache audit | PASS | ۲۵ فایل precache؛ هیچ فایل مفقودی یافت نشد |
+| ZIP integrity | PASS | پس از بسته‌بندی بررسی می‌شود |
+
+## چه چیزی واقعاً آزموده شد؟
+- کلاینت ابری نوشتن را بدون AAL2 نمی‌پذیرد.
+- فقط پرونده دارای رضایت ثبت‌شده در انتقال وارد می‌شود.
+- کد پرونده تکراری با نام متفاوت و کد تکراری محلی، انتقال را متوقف می‌کند.
+- نگاشت شناسه برای هر مرکز درمانی مستقل است.
+- تصویر زخم به مسیر Storage خصوصی ارسال می‌شود.
+- انتقال تکراری، فایل/رکورد موجود را به‌صورت پیش‌فرض بازنویسی نمی‌کند.
+- دریافت ابری، رکورد محلی همسان را تغییر نمی‌دهد.
+- در صورت خطای ذخیره‌سازی محلی، ادغام rollback می‌شود.
+
+## محدودیت‌ها
+- SQL migrationها روی PostgreSQL/Supabase واقعی اجرا نشده‌اند؛ ابزار `psql` و Supabase CLI در محیط آزمون موجود نبود.
+- احراز هویت و PostgREST در تست‌های خودکار با mock شبیه‌سازی شده‌اند.
+- RLS و Storage policies باید با دو حساب و دو مرکز واقعی در staging آزموده شوند.
+- انتقال داده در محیط مرورگر واقعی و دستگاه Android هنوز انجام نشده است.
+- LocalStorage برای نگهداری تصاویر حجیم محدودیت دارد؛ در صورت پرشدن فضا، دریافت ادغام را rollback می‌کند.
+- همگام‌سازی زنده دوطرفه، realtime و conflict resolution تعاملی هنوز در این نسخه وجود ندارد.
+- این نسخه برای استفاده بالینی با داده واقعی تأیید نشده است.
+
+## نتیجه
+۱۳ گروه آزمون خودکار/ایستا در این اجرا بدون شکست تکمیل شدند. این نتیجه تأیید صحت کد و مسیرهای mock شده است، نه تأیید استقرار واقعی پایگاه داده یا آمادگی بالینی.

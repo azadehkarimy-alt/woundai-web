@@ -1,0 +1,28 @@
+WoundAI Version 30.2 — Local Test Report
+Date: 2026-11-14
+
+PASSED
+- node --check app.js
+- node --check sw.js
+- node --check supabase-config.js
+- node --check supabase-client-v30.js
+- node --check supabase-ui-v30.js
+- node tests/smoke-check.mjs
+  Result: WoundAI v30.2 smoke checks passed (287 unique DOM ids, 14 core pages).
+- node tests/supabase-client-check.mjs
+  Result: passed (URL validation, service-role/secret-key rejection, sessionStorage, authenticated REST calls, sign-out).
+- HTML parser/structure check — passed (287 unique IDs; cloud panel is inside the security page).
+- python -m pytest -q research-tissue-api
+  Result: 6 passed.
+
+NOT RUN / NOT VERIFIED
+- Supabase SQL migrations were not executed against a real Supabase project.
+- Tenant isolation, role permissions, AAL2 MFA enforcement and private Storage policies were not tested against a live project.
+- Browser/device testing could not be completed in this environment; headless Chromium did not complete startup/dump-dom within the test timeout.
+- GitHub Actions release pipeline was not run against the user's repository.
+- Automated backup/PITR and restore were not configured or tested on a hosting project.
+- No local patient records were migrated or synced; the main clinical forms remain LocalStorage-backed.
+- The separate research tissue API still has no production authentication/rate limiting and no trained AI model.
+
+Conclusion:
+Version 30.2 contains the cloud authentication/client and database migration foundation. It is a development increment only, not production-approved for identifiable patient data.

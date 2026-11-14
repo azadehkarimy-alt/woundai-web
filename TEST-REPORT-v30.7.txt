@@ -1,0 +1,47 @@
+# گزارش آزمون WoundAI v30.7
+
+تاریخ بسته: ۱۴ نوامبر ۲۰۲۶  
+مبنای توسعه: WoundAI Version 30.6
+
+## نتیجه کلی
+۱۳ گروه آزمون در محیط محلی بدون شکست اجرا شدند. این نتیجه، آزمون کد و مسیرهای mock/محلی است؛ تأیید استقرار واقعی Supabase یا آمادگی بالینی نیست.
+
+## آزمون‌های نحوی
+| فایل | نتیجه |
+|---|---|
+| app.js | PASS |
+| supabase-client-v30.js | PASS |
+| supabase-ui-v30.js | PASS |
+| cloud-sync-v30.js | PASS |
+| offline-image-store-v307.js | PASS |
+| sw.js | PASS |
+
+## آزمون‌های عملکردی
+| آزمون | نتیجه | پوشش |
+|---|---|---|
+| smoke-check | PASS | ۳۲۹ شناسه DOM یکتا، ۱۴ صفحه اصلی، نسخه، migration و فایل‌های PWA |
+| supabase-client-check | PASS | تنظیمات، نشست، AAL2، RPC نقش/پشتیبان، update نسخه‌دار و Storage |
+| cloud-sync-check | PASS | رضایت، کد تکراری، شناسه مرکز-محور، انتقال، بازیابی، حفظ داده محلی و conflict |
+| offline-image-store-check | PASS | IndexedDB، صف تصویر، الزام AAL2، ارسال و پاک‌سازی صف |
+| clinical-validation-check | PASS | ۱۰ assertion بالینی |
+| tissue-api-client-check | PASS | سلامت API، رضایت و توکن Bearer |
+| pytest research-tissue-api | PASS | ۲۰ تست |
+
+## کنترل PWA
+- ۲۶ فایل در فهرست precache قرار دارند.
+- تمام ۲۶ فایل در بسته وجود دارند.
+- نسخه Service Worker برابر `woundai-release-v30-7` است.
+- `APP_VERSION` و Manifest روی 30.7 تنظیم شده‌اند.
+
+## محدودیت‌های آزمون
+- در محیط حاضر `psql`، PostgreSQL server و Supabase CLI موجود نبودند؛ بنابراین migration v30.7 روی PostgreSQL واقعی اجرا نشده است.
+- RLS، RPCهای امنیتی، جلوگیری از ارتقای نقش، Snapshot و restore باید در Supabase staging با دو مرکز و حساب‌های دارای نقش متفاوت آزموده شوند.
+- IndexedDB با mock آزمون شده؛ تست روی Android واقعی، Chrome و Safari هنوز انجام نشده است.
+- انتقال و تعارض نسخه‌دار در تست‌های کلاینت با mock اجرا شده؛ اتصال زنده به پروژه Supabase انجام نشده است.
+- Snapshot منطقی در همان DB ذخیره می‌شود و شامل فایل‌های باینری تصاویر نیست. این روش پشتیبان مستقل/offsite نیست.
+- زمان‌بندی روزانه فقط پس از فعال‌سازی اختیاری pg_cron اجرا می‌شود.
+- همه فرم‌های بالینی هنوز به همگام‌سازی زنده و صف آفلاین عمومی متصل نیستند.
+- نسخه برای داده واقعی بیمار یا استفاده بالینی تأیید نشده است.
+
+## نتیجه
+نسخه ۳۰.۷ از نظر آزمون‌های محلی JavaScript، UI، کلاینت، انتقال، صف آفلاین و تست‌های API موفق است. مرحله بعدی الزامی، اجرای migration در staging، آزمون امنیت چندنقشی و بررسی بازیابی واقعی پشتیبان مستقل است.

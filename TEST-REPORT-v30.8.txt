@@ -1,0 +1,49 @@
+WoundAI v30.8 — LOCAL VERIFICATION REPORT
+Date: 2026-11-14
+Base: WoundAI_Version_30_7.zip
+Workspace: WoundAI_Version_30_8_Work
+
+RESULT: 22/22 local checks passed after remediation.
+
+JavaScript syntax:
+- app.js
+- local-db-v308.js
+- supabase-client-v30.js
+- supabase-ui-v30.js
+- cloud-sync-v30.js
+- offline-image-store-v307.js
+- clinical-sync-v308.js
+- offsite-backup-v308.js
+- sw.js
+
+Automated checks:
+- smoke-check.mjs (345 unique DOM IDs; 14 core pages; startup order; PWA assets)
+- supabase-client-check.mjs
+- cloud-sync-check.mjs
+- offline-image-store-check.mjs
+- clinical-sync-v308-check.mjs
+- offsite-backup-v308-check.mjs
+- offsite-edge-static-check.mjs
+- offsite-backup-scope-check.mjs
+- local-db-v308-check.mjs
+- sql-migration-static-check.mjs
+- clinical-validation-check.mjs
+- tissue-api-client-check.mjs
+- research-tissue-api pytest: 20 passed
+
+Additional checks:
+- PWA precache: 29 entries, zero missing local files.
+- Script order: local-db-v308.js loads before app.js; this fixes the startup race that was detected and repaired during verification.
+- Edge Function TypeScript syntax/type smoke-check with Deno/Supabase symbols stubbed: passed.
+- ZIP CRC/integrity verification is performed at packaging time.
+
+IMPORTANT LIMITATIONS — NOT VERIFIED IN THIS ENVIRONMENT:
+- No PostgreSQL server, psql, or Supabase CLI was available. SQL migrations were statically inspected and covered by static checks, but were NOT executed against PostgreSQL.
+- Edge Function was not deployed; S3 credentials, bucket CORS, object permissions and signed PUT/HEAD/GET were not exercised against a live provider.
+- No live Supabase project was connected; RLS, AAL2, membership roles, RPC transaction behavior and multi-device conflict flow still require staging verification.
+- No physical Android/iOS device/browser testing was performed.
+- Clinical correctness, AI model performance, regulatory compliance, and suitability for real patient care are not certified by these software checks.
+
+RELEASE STATUS:
+- Source package and local automated checks: PASS.
+- Production/staging deployment readiness: CONDITIONAL — requires the deployment and staging checklist in MIGRATION-GUIDE-v30.8.md.

@@ -1,0 +1,26 @@
+WoundAI Version 30.1 — Test Report
+Date: 2026-11-14
+
+PASSED
+- node --check app.js
+- node --check sw.js
+- node --check tissue-api-v30.js
+- node --check api-config.js
+- node tests/smoke-check.mjs
+  Result: WoundAI v30.1 smoke checks passed (262 unique DOM ids, 14 core pages).
+- python -m pytest -q (research-tissue-api)
+  Result: 6 passed.
+
+STATIC PACKAGE CHECKS
+- All local script, stylesheet, image, manifest and service-worker precache references in index.html resolve to files in the package.
+- Service-worker precache list: all 18 listed assets exist.
+- Active UI/docs/manifest version markers checked for stale v29/v28/v22/v17 labels: none found in active version surfaces.
+- Duplicate function declarations checked in app.js: none found.
+- Large logos resized with transparency preserved; overall unpacked package data reduced by approximately 3.35 MB compared with the original archive contents.
+
+NOT RUN / LIMITATIONS
+- Real browser interaction and mobile/desktop visual QA were not completed; the available headless browser runtime blocked navigation with ERR_BLOCKED_BY_ADMINISTRATOR.
+- GitHub Actions on the live repository was not run.
+- API deployment against a real HTTPS host was not performed.
+- Authentication, production rate limiting, central database, server audit logging and validated AI inference are not included in this stabilization increment.
+- No real patient data should be entered.
