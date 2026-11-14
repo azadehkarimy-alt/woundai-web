@@ -1,0 +1,71 @@
+{
+  "registry_version": "1.1",
+  "updated_on": "2026-11-14",
+  "governance": "This registry describes software behavior only. It is not clinical approval. A designated clinical lead must approve the exact source edition, scoring rules, licensing, local thresholds and implementation before operational use.",
+  "tools": [
+    {
+      "id": "SINBAD",
+      "implementation": "component_sum_when_all_six_values_are_valid_binary",
+      "status": "provisional_calculation",
+      "stored_raw_components": true,
+      "stored_total": true,
+      "clinical_approval_required": true,
+      "notes": "No individual outcome prediction or treatment decision from total alone."
+    },
+    {
+      "id": "PUSH-3.0",
+      "implementation": "raw_capture_only",
+      "status": "scoring_disabled",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "Total scoring disabled pending confirmation of official edition, scoring table and permission."
+    },
+    {
+      "id": "BWAT",
+      "implementation": "13_scored_observations_raw_capture_only",
+      "status": "scoring_disabled",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "Current UI captures 13 score-bearing observations only; full instrument structure and license must be reviewed before total scoring."
+    },
+    {
+      "id": "WIfI",
+      "implementation": "component_capture_only",
+      "status": "stage_not_inferred",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "No composite clinical stage is inferred by the application."
+    },
+    {
+      "id": "NPIAP",
+      "implementation": "manual_clinician_entry",
+      "status": "manual_only",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "Use only for pressure injury and by trained clinician using current official definitions."
+    },
+    {
+      "id": "Wagner",
+      "implementation": "manual_clinician_entry",
+      "status": "manual_only",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "Manual entry; no automatic inference."
+    },
+    {
+      "id": "University_of_Texas",
+      "implementation": "manual_component_entry",
+      "status": "manual_only",
+      "stored_raw_components": true,
+      "stored_total": false,
+      "clinical_approval_required": true,
+      "notes": "Grade and stage remain separate; no automatic inference."
+    }
+  ],
+  "input_validation_note": "Numeric ranges in clinical-validation-v30.js are software input plausibility checks only. They are not reference ranges, diagnostic cutoffs, or treatment thresholds."
+}
