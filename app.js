@@ -1214,3 +1214,6 @@ const v23Lang=applyLang;applyLang=function(){v23Lang();if(currentPage==='appoint
  const oldLang=applyLang;applyLang=function(){oldLang();sync();document.querySelectorAll('input[type="date"]').forEach(x=>x._v23Update?.());if(lang!=='fa')pop.hidden=true};
  sync();
 })();
+
+/* V24 mobile navigation behavior */
+(()=>{const s=document.getElementById('sidebar'),o=document.getElementById('sidebarScrim'),b=document.getElementById('menuBtn');if(!s||!o||!b)return;const mobile=()=>matchMedia('(max-width:1100px)').matches;const sync=()=>{const open=mobile()&&s.classList.contains('open');o.hidden=!open;b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'بستن منو':'باز کردن منو')};const close=()=>{s.classList.remove('open');sync()};b.addEventListener('click',()=>queueMicrotask(sync));o.addEventListener('click',close);s.querySelectorAll('a,.nav-item').forEach(x=>x.addEventListener('click',close));document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});window.addEventListener('resize',()=>{if(!mobile())s.classList.remove('open');sync()});new MutationObserver(sync).observe(s,{attributes:true,attributeFilter:['class']});document.querySelectorAll('#newPatientBtn,#closeModal,#cancelPatient').forEach(x=>x.addEventListener('click',close));sync()})();
