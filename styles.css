@@ -499,3 +499,11 @@ button[hidden]{display:none!important}
  .bodymap-card>b{font-size:11px}
  .bodymap-point{width:19px;height:19px;min-width:19px;min-height:19px}
 }
+
+/* v21: mobile form containment and wound follow-up */
+@media(max-width:700px){.modal,.patient-detail-panel{box-sizing:border-box;max-width:calc(100vw - 20px);max-height:calc(100dvh - 24px);overflow-y:auto}.modal input,.modal select,.modal textarea,.patient-detail-panel input{max-width:100%;min-width:0;box-sizing:border-box}.table-scroll{overflow-x:auto;max-width:100%}.modal-actions{display:flex;flex-wrap:wrap;gap:8px}.modal-actions button{min-width:0;flex:1 1 140px}}
+.wound21-trend{margin-top:14px;padding:14px;border:1px solid #7894a8;border-radius:10px;line-height:1.9}
+
+/* Version 23 modules */
+.v23-item{border:1px solid #d5e8e6;border-radius:12px;padding:14px;margin:10px 0;background:#f5fbfa;overflow-wrap:anywhere}.v23-item p{margin:7px 0}.v23-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.v23-actions button{border:1px solid #087e83;background:white;color:#092c4c;border-radius:9px;padding:8px;cursor:pointer}
+.v23-native-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}.v23-date-button{background:#fff;border:1px solid #9dbab9;border-radius:9px;padding:11px;color:#092c4c;cursor:pointer;text-align:right;width:100%}.v23-cal-pop{position:fixed;inset:auto 12px 16px auto;z-index:99999;width:min(360px,calc(100vw - 24px));max-height:80vh;overflow:auto;background:#fff;border:2px solid #087e83;border-radius:16px;box-shadow:0 10px 50px #092c4c55;padding:14px;direction:rtl}.v23-cal-pop[hidden]{display:none}.v23-cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.v23-cal-pop button{border:1px solid #c9dedd;background:#f3fbfa;color:#092c4c;border-radius:8px;padding:8px;cursor:pointer}.v23-cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px;text-align:center}.v23-cal-grid button{padding:8px 0}.v23-cal-grid button.selected{background:#087e83;color:#fff}

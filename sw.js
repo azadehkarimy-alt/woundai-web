@@ -1,7 +1,8 @@
-const CACHE_NAME = 'woundai-release-v20';
+const CACHE_NAME = 'woundai-release-v22';
 const CORE_ASSETS = [
   './',
   './index.html',
+  './education.html',
   './styles.css',
   './app.js',
   './manifest.webmanifest',
@@ -43,7 +44,8 @@ self.addEventListener('fetch', event => {
         const response = await fetch(request);
         if (response.ok) {
           const cache = await caches.open(CACHE_NAME);
-          cache.put('./index.html', response.clone());
+          cache.put('./index.html',
+  './education.html', response.clone());
         }
         return response;
       } catch {

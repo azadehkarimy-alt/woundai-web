@@ -1,0 +1,1 @@
+WoundAI v21: targeted workflow checks, wound follow-up comparison to baseline and previous measurement, elapsed days, mobile containment improvements, cache refresh. Research prototype; browser/mobile functional testing required.
