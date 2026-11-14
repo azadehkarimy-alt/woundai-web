@@ -512,3 +512,15 @@ button[hidden]{display:none!important}
 .sidebar-scrim[hidden]{display:none!important}
 @media(max-width:1100px){html,body{max-width:100%;overflow-x:clip}.app-shell{min-width:0;width:100%}.main-area{width:100%!important;max-width:100%!important;min-width:0;margin:0!important;padding:0 14px 22px!important;overflow-x:clip}.sidebar{position:fixed!important;inset:0 0 0 auto!important;width:min(290px,86vw)!important;z-index:81!important;transform:translateX(110%)!important;visibility:hidden;pointer-events:none;overflow-y:auto;transition:transform .25s}.sidebar.open{transform:translateX(0)!important;visibility:visible;pointer-events:auto}.sidebar-scrim:not([hidden]){display:block;position:fixed;inset:0;background:#031a2d99;z-index:80}.mobile-menu{display:inline-flex!important;align-items:center;justify-content:center;min-width:44px;min-height:44px}.top-title{min-width:0;flex:1}.page,.panel,.patient-card{min-width:0;max-width:100%}.patient-grid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}.modal-backdrop{padding:10px!important;overflow-y:auto}.modal{width:100%!important;max-width:min(680px,calc(100vw - 20px))!important;max-height:calc(100dvh - 20px)!important;overflow:auto;min-width:0}.modal .field,.modal input,.modal select,.modal textarea{min-width:0;max-width:100%;box-sizing:border-box}.workflow-ribbon{flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}}
 @media(max-width:760px){.modal{padding:16px!important}.modal .form-grid{grid-template-columns:minmax(0,1fr)!important}.modal .span-2{grid-column:auto!important}.modal-actions{position:sticky;bottom:-16px;background:white;padding:12px 0;z-index:2;flex-wrap:wrap}.modal-actions button{flex:1 1 130px;min-height:44px}.patient-grid,.dashboard-grid,.report-grid,.security-grid{grid-template-columns:minmax(0,1fr)!important}.card-actions{flex-wrap:wrap}.card-actions button{flex:1 1 42%;min-width:0;white-space:normal}}
+
+/* V25: patient list remains single-column throughout tablet/mobile layouts.
+   All card actions remain inside their own card and wrap into readable rows. */
+@media (max-width:1100px){
+  .patient-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;width:100%;max-width:100%}
+  .patient-card{min-width:0!important;width:100%;max-width:100%;overflow:hidden;box-sizing:border-box}
+  .patient-card-head,.patient-meta{min-width:0;flex-wrap:wrap}
+  .patient-card h3,.patient-card p{overflow-wrap:anywhere}
+  .patient-card .card-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;max-width:100%;box-sizing:border-box}
+  .patient-card .card-actions button{min-width:0!important;width:100%;max-width:100%;white-space:normal;overflow-wrap:anywhere;min-height:44px;padding:10px 7px;box-sizing:border-box}
+}
+@media(max-width:360px){.patient-card .card-actions{grid-template-columns:minmax(0,1fr)}}
