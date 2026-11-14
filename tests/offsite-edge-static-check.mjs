@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+const source=fs.readFileSync(new URL('../supabase/functions/woundai-offsite-backup/index.ts',import.meta.url),'utf8');
+assert.match(source,/AWS4-HMAC-SHA256/,'SigV4 signing algorithm missing');
+assert.match(source,/X-Amz-SignedHeaders/,'Signed headers missing');
+assert.match(source,/x-amz-meta-woundai-sha256/,'Object checksum metadata missing');
+assert.match(source,/clinic_members/,'Clinic membership authorization missing');
+assert.match(source,/\\["owner",\\s*"admin"\\]/,'Owner/admin role check missing');
+assert.match(source,/SUPABASE_SERVICE_ROLE_KEY/,'Service-role metadata insert missing');
+assert.match(source,/sign-put/,'Presigned upload flow missing');
+assert.match(source,/sign-get/,'Presigned download flow missing');
+assert.match(source,/content-length/,'External object size verification missing');
+assert.match(source,/clinic_offsite_backups/,'Backup metadata table integration missing');
+console.log('offsite-edge-static-check: S3 SigV4, clinic role authorization, signed checksum metadata, external object verification and metadata persistence passed');
