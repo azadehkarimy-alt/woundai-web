@@ -48,11 +48,24 @@
     copy._mediaInIndexedDB=true;copy._fallbackFull=false;
     return copy;
   }
+  function withTimeout(promise,ms,label){
+    return Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(label||'مهلت بازیابی پایگاه داده به پایان رسید.')),ms))]);
+  }
   async function restore(initialState){
     restoring=true;
+    const local=(()=>{try{return JSON.parse(localStorage.getItem('woundai_pro_local_v2')||'null')}catch{return null}})();
     try{
-      const saved=await getSnapshot();
-      const local=(()=>{try{return JSON.parse(localStorage.getItem('woundai_pro_local_v2')||'null')}catch{return null}})();
+      let saved=null;
+      try{saved=await withTimeout(getSnapshot(),8000,'پایگاه داده محلی در زمان مجاز پاسخ نداد.');}
+      catch(dbError){
+        console.warn('WoundAI local database restore timed out or failed; retaining browser fallback.',dbError);
+        const status=document.getElementById('localDbBootStatus');if(status)status.textContent='پایگاه داده محلی پاسخ نداد؛ اطلاعات قابل‌دسترس مرورگر حفظ شده و ورود آزاد است.';
+        if(local&&typeof local==='object'){
+          const recovered=clone(local);delete recovered._localSavedAt;delete recovered._fallbackFull;
+          ready=false;return recovered;
+        }
+        throw dbError;
+      }
       if(saved?.payload){
         if(local?._fallbackFull&&Number(local._localSavedAt)>Number(saved.savedAt)){
           const recovered=clone(local);delete recovered._fallbackFull;delete recovered._localSavedAt;
@@ -80,12 +93,14 @@
   }
   function unlock(){
     const button=document.getElementById('enterWoundAI');
-    if(button)button.disabled=false;
+    if(button){button.disabled=false;button.removeAttribute('aria-disabled');}
     const status=document.getElementById('localDbBootStatus');if(status)status.textContent=ready?'اطلاعات محلی بازیابی شد.':'ذخیره‌سازی پایدار در دسترس نیست؛ از پشتیبان استفاده کنید.';
   }
   function isReady(){return ready;}
   function isRestoring(){return restoring;}
   window.WoundAILocalStore={restore,save,toLocalSnapshot,isReady,isRestoring,unlock};
   const enter=document.getElementById('enterWoundAI');
-  if(enter){enter.disabled=true;enter.textContent='در حال بازیابی پرونده‌ها…';}
+  if(enter){enter.disabled=false;enter.removeAttribute('aria-disabled');}
+  const status=document.getElementById('localDbBootStatus');
+  if(status)status.textContent='در حال بررسی ذخیره‌سازی محلی؛ می‌توانید وارد سامانه شوید.';
 })();
